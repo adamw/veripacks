@@ -12,8 +12,10 @@ object BuildSettings {
 }
 
 object Dependencies {
-  val scalatest     = "org.scalatest"             %% "scalatest"            % "1.8"
-  val mockito       = "org.mockito"               % "mockito-core"          % "1.9.5"
+  val javassist     = "org.javassist"             % "javassist"             % "3.16.1-GA"
+
+  val scalatest     = "org.scalatest"             %% "scalatest"            % "1.8"       % "test"
+  val mockito       = "org.mockito"               % "mockito-core"          % "1.9.5"     % "test"
 
   val testing = Seq(scalatest, mockito)
 }
@@ -37,6 +39,6 @@ object VeripacksBuild extends Build {
   lazy val verifier: Project = Project(
     "veripacks-verifier",
     file("verifier"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= testing)
+    settings = buildSettings ++ Seq(libraryDependencies ++= testing ++ Seq(javassist))
   ) dependsOn(annotations)
 }
