@@ -13,4 +13,4 @@ case class VerifyResult(brokenConstraints: List[ClassUsage])
 
 case class ClassUsage(cls: ClassName, usedIn: ClassName, line: Int)
 
-class ClassName(val name: String) extends AnyVal
+case class ClassName(name: String)
