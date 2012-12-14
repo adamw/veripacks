@@ -15,12 +15,12 @@ object Dependencies {
   val javassist     = "org.javassist"             % "javassist"             % "3.16.1-GA"
 
   val scalaLogging  = "com.typesafe"              % "scalalogging-slf4j_2.10.0-RC3" % "0.4.0"
-  val slf4jSimple   = "org.slf4j"                 % "slf4j-simple"          % "1.7.2"
+  val logback       = "ch.qos.logback"            % "logback-classic"       % "1.0.7"
 
   val scalatest     = "org.scalatest"             % "scalatest_2.10.0-RC3"  % "1.8-B1"    % "test"
   val mockito       = "org.mockito"               % "mockito-core"          % "1.9.5"     % "test"
 
-  val testing = Seq(scalatest, mockito, slf4jSimple % "test")
+  val testing = Seq(scalatest, mockito, logback % "test")
 }
 
 object VeripacksBuild extends Build {
