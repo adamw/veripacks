@@ -6,15 +6,15 @@ import java.util.jar.JarFile
 import java.io.File
 import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.JavaConverters._
-import org.veripacks.ClassName
+import org.veripacks.{RootPkg, Pkg, ClassName}
 
 class ClassNamesLister extends Logging {
   // http://stackoverflow.com/questions/1456930/how-do-i-read-all-classes-from-a-java-package-in-the-classpath/7461653#7461653
-  def list(packageName: String): Iterable[ClassName] = {
+  def list(pkg: Pkg): Iterable[ClassName] = {
     val classLoader = Thread.currentThread().getContextClassLoader
     val names = new mutable.HashSet[ClassName]()
 
-    val packageNameSlashed = packageName.replace('.', '/')
+    val packageNameSlashed = pkg.name.replace('.', '/')
     val packageURLs = classLoader.getResources(packageNameSlashed)
 
     for (packageURL <- packageURLs.asScala) {
@@ -24,9 +24,9 @@ class ClassNamesLister extends Logging {
       if (protocol.equals("jar")) {
         names ++= allClassesInJar(packageURL, packageNameSlashed)
       } else if (protocol.equals("file")) {
-        names ++= allClassesInDirectory(packageName, new File(packageURL.getFile))
+        names ++= allClassesInDirectory(pkg, new File(packageURL.getFile))
       } else {
-        throw new IllegalArgumentException(s"Unsupported protocol $protocol in URL $packageURL for package $packageName.")
+        throw new IllegalArgumentException(s"Unsupported protocol $protocol in URL $packageURL for package $pkg.")
       }
     }
 
@@ -45,25 +45,25 @@ class ClassNamesLister extends Logging {
     while (jarEntries.hasMoreElements) {
       val entryNameSlashed = jarEntries.nextElement().getName
       if (entryNameSlashed.startsWith(packageNameSlashed)) {
-        addEntryIfClass(names, None, entryNameSlashed)
+        addEntryIfClass(names, RootPkg, entryNameSlashed)
       }
     }
 
     names.toSet
   }
 
-  private def allClassesInDirectory(packageName: String, dir: File): Set[ClassName] = {
+  private def allClassesInDirectory(pkg: Pkg, dir: File): Set[ClassName] = {
     val names = mutable.HashSet[ClassName]()
     val content = dir.listFiles
     for (actual <- content) {
       val entryName = actual.getName
-      val added = addEntryIfClass(names, Some(packageName), entryName)
+      val added = addEntryIfClass(names, pkg, entryName)
       if (!added) {
         val entryFile = new File(dir, entryName)
         if (entryFile.isDirectory) {
-          names ++= allClassesInDirectory(s"$packageName.$entryName", entryFile)
+          names ++= allClassesInDirectory(pkg.child(entryName), entryFile)
         } else {
-          logger.debug(s"Not a class or a directory: $packageName for package $entryName")
+          logger.debug(s"Not a class or a directory: $pkg for package $entryName")
         }
       }
     }
@@ -74,12 +74,21 @@ class ClassNamesLister extends Logging {
   /**
    * @return True if the entry was a class and hence was added.
    */
-  private def addEntryIfClass(names: mutable.Set[ClassName], packageName: Option[String], entryNameSlashed: String) = {
+  private def addEntryIfClass(names: mutable.Set[ClassName], rootPkg: Pkg, entryNameSlashed: String) = {
     if (isClass(entryNameSlashed)) {
       val entryNameSlashedWithoutDotClass = entryNameSlashed.substring(0, entryNameSlashed.length - 6)
-      val className = packageName.map(_ + '.').getOrElse("") + entryNameSlashedWithoutDotClass.replace('/', '.')
-      names += ClassName(className)
-      logger.debug(s"Adding class $className")
+      val entryNameDottedWithoutDotClass = entryNameSlashedWithoutDotClass.replace('/', '.')
+
+      // The entry name may contain some part of the package
+      val lastDot = entryNameDottedWithoutDotClass.lastIndexOf('.')
+      val (pkg, className) = if (lastDot == -1) {
+        (rootPkg, entryNameDottedWithoutDotClass)
+      } else {
+        (rootPkg.child(entryNameDottedWithoutDotClass.substring(0, lastDot)), entryNameDottedWithoutDotClass.substring(lastDot+1))
+      }
+      val toAdd = ClassName(pkg, className)
+      names += toAdd
+      logger.debug(s"Adding class $toAdd")
       true
     } else {
       false
