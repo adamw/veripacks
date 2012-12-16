@@ -15,5 +15,5 @@ class VerifierTest extends FlatSpec with ShouldMatchers {
       MethodSignatureUsageDetail("Class121.scala", "i2", 7))))
   }
 
-  private def from(cls: Class[_]) = new ClassName(DefaultPkg(cls.getPackage.toString), cls.getName)
+  private def from(cls: Class[_]) = new ClassName(Pkg(cls.getPackage.toString), cls.getName)
 }

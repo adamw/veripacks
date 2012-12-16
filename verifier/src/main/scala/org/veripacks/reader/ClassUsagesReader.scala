@@ -59,7 +59,7 @@ class ClassUsagesReader extends Logging {
 
     private def possibleUsage(ctClass: CtClass, usageDetail: ClassUsageDetail) {
       if (!ctClass.isPrimitive && ctClass.getPackageName.startsWith(scope.name)) {
-        val usage = ClassUsage(ClassName(Pkg.from(ctClass.getPackageName), ctClass.getSimpleName),
+        val usage = ClassUsage(ClassName(Pkg(ctClass.getPackageName), ctClass.getSimpleName),
           usagesInClassName, usageDetail)
         logger.debug(s"Adding usage $usage.")
         usages += usage

@@ -15,7 +15,7 @@ case class DefaultPkg(name: String) extends Pkg {
 }
 
 object Pkg {
-  def from(pkgName: String) = if (pkgName == RootPkg.name) RootPkg else DefaultPkg(pkgName)
+  def apply(pkgName: String) = if (pkgName == RootPkg.name) RootPkg else DefaultPkg(pkgName)
 }
 
 case class ClassName(pkg: Pkg, name: String) {

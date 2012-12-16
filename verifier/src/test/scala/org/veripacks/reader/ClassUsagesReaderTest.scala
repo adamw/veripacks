@@ -5,7 +5,7 @@ import org.scalatest.FlatSpec
 import org.veripacks.{RootPkg, Pkg, ClassName}
 
 class ClassUsagesReaderTest extends FlatSpec with ShouldMatchers {
-  val rootPkg = Pkg.from("org.veripacks.data.usagesreader")
+  val rootPkg = Pkg("org.veripacks.data.usagesreader")
   val cls1 = ClassName(rootPkg, "Cls1")
   val cls2 = ClassName(rootPkg, "Cls2")
 
@@ -18,7 +18,7 @@ class ClassUsagesReaderTest extends FlatSpec with ShouldMatchers {
     TestData(ClassName(rootPkg, "UsageInDefReturn"), rootPkg, Set(cls1, cls2)),
     TestData(ClassName(rootPkg, "UsageInDefParam"), rootPkg, Set(cls1, cls2)),
     TestData(ClassName(rootPkg, "UsageScope"), rootPkg, Set()),
-    TestData(ClassName(rootPkg, "UsageScope"), RootPkg, Set(ClassName(Pkg.from("java.lang"), "String"))),
+    TestData(ClassName(rootPkg, "UsageScope"), RootPkg, Set(ClassName(Pkg("java.lang"), "String"))),
     TestData(ClassName(rootPkg, "UsageEverywhere"), RootPkg, Set(cls1, cls2))
   )
 
