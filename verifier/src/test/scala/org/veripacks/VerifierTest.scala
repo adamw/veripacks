@@ -11,7 +11,8 @@ class VerifierTest extends FlatSpec with ShouldMatchers {
     val result = new Verifier().verify(List("org.veripacks.data.t1"))
 
     // Then
-    result.brokenConstraints should be (List(ClassUsage(from(classOf[Class112]), from(classOf[Class121]), 7)))
+    result.brokenConstraints should be (List(ClassUsage(from(classOf[Class112]), from(classOf[Class121]),
+      MethodSignatureUsageDetail("Class121.scala", "i2", 7))))
   }
 
   private def from(cls: Class[_]) = new ClassName(DefaultPkg(cls.getPackage.toString), cls.getName)

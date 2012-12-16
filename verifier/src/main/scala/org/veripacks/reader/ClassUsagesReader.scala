@@ -1,29 +1,38 @@
 package org.veripacks.reader
 
-import org.veripacks.{Pkg, ClassName, ClassUsage}
+import org.veripacks._
 import javassist.{CtMethod, CtClass, CtField, ClassPool}
 import com.typesafe.scalalogging.slf4j.Logging
 import collection.mutable.ListBuffer
-import javax.management.remote.rmi._RMIConnection_Stub
+import org.veripacks.ClassName
+import org.veripacks.ClassUsage
 
 class ClassUsagesReader extends Logging {
   private val classPool = ClassPool.getDefault
 
-  def read(usagesIn: ClassName, scope: Pkg): List[ClassUsage] = {
+  def read(usagesIn: ClassName, scope: Pkg): Iterable[ClassUsage] = {
     logger.debug(s"Reading usages in $usagesIn.")
 
-    val usagesAccumulator = new UsagesAccumulator(usagesIn, scope)
-    usagesAccumulator.readFromClass(classPool.get(usagesIn.fullName))
+    val usagesAccumulator = new UsagesAccumulator(classPool.get(usagesIn.fullName), usagesIn, scope)
+    usagesAccumulator.read()
 
-    usagesAccumulator.usages.toList
+    combineSameUsages(usagesAccumulator.usages.toList)
   }
 
-  private class UsagesAccumulator(usagesIn: ClassName, scope: Pkg) {
+  def combineSameUsages(raw: List[ClassUsage]) = {
+    raw.groupBy(cu => (cu.cls, cu.usedIn)).values.map(cuList => {
+      ClassUsage(cuList(0).cls, cuList(0).usedIn, MultipleUsageDetail(cuList.map(_.detail).toSet))
+    })
+  }
+
+  private class UsagesAccumulator(usagesIn: CtClass, usagesInClassName: ClassName, scope: Pkg) {
     val usages = new ListBuffer[ClassUsage]()
 
-    def readFromClass(ctClass: CtClass) {
-      readFromFields(ctClass.getFields)
-      readFromMethods(ctClass.getDeclaredMethods)
+    private val sourceFileName = usagesIn.getClassFile.getSourceFile
+
+    def read() {
+      readFromFields(usagesIn.getDeclaredFields)
+      readFromMethods(usagesIn.getDeclaredMethods)
     }
 
     private def readFromFields(fields: Array[CtField]) {
@@ -31,7 +40,7 @@ class ClassUsagesReader extends Logging {
     }
 
     private def readFromField(field: CtField) {
-      // TODO
+      possibleUsage(field.getType, FieldUsageDetail(sourceFileName, field.getName))
     }
 
     private def readFromMethods(methods: Array[CtMethod]) {
@@ -39,18 +48,19 @@ class ClassUsagesReader extends Logging {
     }
 
     private def readFromMethod(method: CtMethod) {
-      val methodLineNumber = method.getMethodInfo.getLineNumber(0)
+      val methodUsageDetail = MethodSignatureUsageDetail(sourceFileName, method.getName, method.getMethodInfo.getLineNumber(0))
 
-      possibleUsage(method.getReturnType, methodLineNumber)
+      possibleUsage(method.getReturnType, methodUsageDetail)
 
       for (parameterType <- method.getParameterTypes) {
-        possibleUsage(parameterType, methodLineNumber)
+        possibleUsage(parameterType, methodUsageDetail)
       }
     }
 
-    private def possibleUsage(ctClass: CtClass, lineNumber: Int) {
+    private def possibleUsage(ctClass: CtClass, usageDetail: ClassUsageDetail) {
       if (!ctClass.isPrimitive && ctClass.getPackageName.startsWith(scope.name)) {
-        val usage = ClassUsage(ClassName(Pkg.from(ctClass.getPackageName), ctClass.getSimpleName), usagesIn, lineNumber)
+        val usage = ClassUsage(ClassName(Pkg.from(ctClass.getPackageName), ctClass.getSimpleName),
+          usagesInClassName, usageDetail)
         logger.debug(s"Adding usage $usage.")
         usages += usage
       }

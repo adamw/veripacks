@@ -21,5 +21,3 @@ object Pkg {
 case class ClassName(pkg: Pkg, name: String) {
   def fullName = pkg.name + '.' + name
 }
-
-case class ClassUsage(cls: ClassName, usedIn: ClassName, line: Int)
