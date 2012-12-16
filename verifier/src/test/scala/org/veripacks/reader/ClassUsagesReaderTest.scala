@@ -14,7 +14,7 @@ class ClassUsagesReaderTest extends FlatSpec with ShouldMatchers {
     val cls121 = ClassName(rootPkg.child("p12"), "Class121")
 
     // When
-    val result = new ClassUsagesReader().read(cls121)
+    val result = new ClassUsagesReader().read(cls121, rootPkg)
 
     // Then
     result should be (List(
