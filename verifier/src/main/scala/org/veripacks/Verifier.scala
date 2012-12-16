@@ -1,10 +1,7 @@
 package org.veripacks
 
-import reader.ClassUsagesReader
-
 class Verifier {
   def verify(rootPackages: Iterable[String]): VerifyResult = {
-    new ClassUsagesReader().read(rootPackages)
     VerifyResult(Nil)
   }
 }
