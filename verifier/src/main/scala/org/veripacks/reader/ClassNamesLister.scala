@@ -8,7 +8,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.JavaConverters._
 import org.veripacks.ClassName
 
-class ClassesLister extends Logging {
+class ClassNamesLister extends Logging {
   // http://stackoverflow.com/questions/1456930/how-do-i-read-all-classes-from-a-java-package-in-the-classpath/7461653#7461653
   def list(packageName: String): Iterable[ClassName] = {
     val classLoader = Thread.currentThread().getContextClassLoader

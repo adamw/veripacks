@@ -4,10 +4,10 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 import org.veripacks.ClassName
 
-class ClassesListerTest extends FlatSpec with ShouldMatchers {
+class ClassNamesListerTest extends FlatSpec with ShouldMatchers {
   it should "list classes that are on the classpath in a folder" in {
     // When
-    val result = new ClassesLister().list("org.veripacks.data.t1")
+    val result = new ClassNamesLister().list("org.veripacks.data.t1")
 
     // Then
     result should have size (4)
@@ -20,7 +20,7 @@ class ClassesListerTest extends FlatSpec with ShouldMatchers {
     val pkg = "org.slf4j"
 
     // When
-    val result = new ClassesLister().list(pkg)
+    val result = new ClassNamesLister().list(pkg)
 
     // Then
     result.foreach(_.name should startWith (pkg))
