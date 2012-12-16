@@ -39,11 +39,17 @@ class ClassUsagesReader extends Logging {
     }
 
     private def readFromMethod(method: CtMethod) {
-      possibleUsage(method.getReturnType, method.getMethodInfo.getLineNumber(0))
+      val methodLineNumber = method.getMethodInfo.getLineNumber(0)
+
+      possibleUsage(method.getReturnType, methodLineNumber)
+
+      for (parameterType <- method.getParameterTypes) {
+        possibleUsage(parameterType, methodLineNumber)
+      }
     }
 
     private def possibleUsage(ctClass: CtClass, lineNumber: Int) {
-      if (ctClass.getPackageName.startsWith(scope.name)) {
+      if (!ctClass.isPrimitive && ctClass.getPackageName.startsWith(scope.name)) {
         val usage = ClassUsage(ClassName(Pkg.from(ctClass.getPackageName), ctClass.getSimpleName), usagesIn, lineNumber)
         logger.debug(s"Adding usage $usage.")
         usages += usage
