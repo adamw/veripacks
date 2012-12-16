@@ -14,6 +14,12 @@ case class DefaultPkg(name: String) extends Pkg {
   def child(childName: String) = DefaultPkg(name + '.' + childName)
 }
 
-case class ClassName(pkg: Pkg, name: String)
+object Pkg {
+  def from(pkgName: String) = if (pkgName == RootPkg.name) RootPkg else DefaultPkg(pkgName)
+}
+
+case class ClassName(pkg: Pkg, name: String) {
+  def fullName = pkg.name + '.' + name
+}
 
 case class ClassUsage(cls: ClassName, usedIn: ClassName, line: Int)
