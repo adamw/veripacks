@@ -2,24 +2,28 @@ package org.veripacks.reader
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
-import org.veripacks.{DefaultPkg, ClassUsage, ClassName}
+import org.veripacks.{Pkg, ClassUsage, ClassName}
 
 class ClassUsagesReaderTest extends FlatSpec with ShouldMatchers {
-  it should "read usages" in {
-    // Given
-    val rootPkg = DefaultPkg("org.veripacks.data.t1")
+  val rootPkg = Pkg.from("org.veripacks.data.usagesreader")
+  val cls1 = ClassName(rootPkg, "Cls1")
+  val cls2 = ClassName(rootPkg, "Cls2")
 
-    val cls111 = ClassName(rootPkg.child("p11"), "Class111")
-    val cls112 = ClassName(rootPkg.child("p11"), "Class112")
-    val cls121 = ClassName(rootPkg.child("p12"), "Class121")
+  case class SimpleClassUsage(cls: ClassName, line: Int)
+  case class TestData(usagesIn: ClassName, scope: Pkg, expectedResult: Set[SimpleClassUsage])
 
-    // When
-    val result = new ClassUsagesReader().read(cls121, rootPkg)
+  val testDatas = List(
+    TestData(ClassName(rootPkg, "UsageInVal"), rootPkg, Set(SimpleClassUsage(cls1, 4), SimpleClassUsage(cls2, 5)))
+  )
 
-    // Then
-    result should be (List(
-      ClassUsage(cls111, cls121, 6),
-      ClassUsage(cls112, cls121, 7)
-    ))
+  for (testData <- testDatas) {
+    it should s"read usages in ${testData.usagesIn.name}" in {
+      // When
+      val result = new ClassUsagesReader().read(testData.usagesIn, testData.scope)
+
+      // Then
+      val expectedResult = testData.expectedResult.map(scu => ClassUsage(scu.cls, testData.usagesIn, scu.line))
+      result.toSet should be (expectedResult)
+    }
   }
 }
