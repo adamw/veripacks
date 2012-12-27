@@ -8,7 +8,7 @@ object BuildSettings {
     scalaVersion  := "2.10.0-RC5",
     scalacOptions += "",
     licenses      := ("Apache2", new java.net.URL("http://www.apache.org/licenses/LICENSE-2.0.txt")) :: Nil
-  )
+  ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings
 }
 
 object Dependencies {
