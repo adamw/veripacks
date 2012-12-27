@@ -5,10 +5,14 @@ case class ClassUsage(cls: ClassName, usedIn: ClassName, detail: ClassUsageDetai
 sealed trait ClassUsageDetail {
   val sourceFileName: String
 }
+
 case class LineNumberUsageDetail(sourceFileName: String, lineNumber: Int) extends ClassUsageDetail
-case class MethodSignatureUsageDetail(sourceFileName: String, methodName: String, lineNumber: Int) extends ClassUsageDetail
+case class MethodSignatureUsageDetail(sourceFileName: String, methodName: String) extends ClassUsageDetail
+case class MethodBodyUsageDetail(sourceFileName: String, methodName: String, lineNumber: Int) extends ClassUsageDetail
 case class FieldUsageDetail(sourceFileName: String, fieldName: String) extends ClassUsageDetail
+case class ClassHeaderUsageDetail(sourceFileName: String) extends ClassUsageDetail
+
 case class MultipleUsageDetail(usages: Set[ClassUsageDetail]) extends ClassUsageDetail {
   require(usages.size > 0)
-  val sourceFileName: String = usages.iterator.next().sourceFileName // All source file names should be the same
+  lazy val sourceFileName: String = usages.iterator.next().sourceFileName // All source file names should be the same
 }

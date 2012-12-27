@@ -12,7 +12,7 @@ class VerifierTest extends FlatSpec with ShouldMatchers {
 
     // Then
     result.brokenConstraints should be (List(ClassUsage(from(classOf[Class112]), from(classOf[Class121]),
-      MethodSignatureUsageDetail("Class121.scala", "i2", 7))))
+      MethodSignatureUsageDetail("Class121.scala", "i2"))))
   }
 
   private def from(cls: Class[_]) = new ClassName(Pkg(cls.getPackage.toString), cls.getName)
