@@ -12,7 +12,7 @@ object BuildSettings {
 }
 
 object Dependencies {
-  val javassist     = "org.javassist"             % "javassist"             % "3.16.1-GA"
+  val asm           = "org.ow2.asm"               % "asm"                   % "4.1"
 
   val scalaLogging  = "com.typesafe"              % "scalalogging-slf4j_2.10.0-RC3" % "0.4.0"
   val logback       = "ch.qos.logback"            % "logback-classic"       % "1.0.7"
@@ -42,6 +42,6 @@ object VeripacksBuild extends Build {
   lazy val verifier: Project = Project(
     "veripacks-verifier",
     file("verifier"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= testing ++ Seq(javassist, scalaLogging))
+    settings = buildSettings ++ Seq(libraryDependencies ++= testing ++ Seq(asm, scalaLogging))
   ) dependsOn(annotations)
 }
