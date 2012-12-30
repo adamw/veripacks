@@ -1,4 +1,4 @@
-package org.veripacks.data.usagesreader
+package org.veripacks.data.dependenciesreader
 
 class UsageEverywhere {
   val p = new Cls1

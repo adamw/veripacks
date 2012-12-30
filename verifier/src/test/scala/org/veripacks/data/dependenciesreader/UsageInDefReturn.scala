@@ -1,4 +1,4 @@
-package org.veripacks.data.usagesreader
+package org.veripacks.data.dependenciesreader
 
 class UsageInDefReturn {
   def m1(): Cls1 = null

@@ -1,4 +1,4 @@
-package org.veripacks.data.usagesreader;
+package org.veripacks.data.dependenciesreader;
 
 public class UsageInField {
     private Cls1 cls1;

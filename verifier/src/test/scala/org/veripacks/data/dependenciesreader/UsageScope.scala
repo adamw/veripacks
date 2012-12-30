@@ -1,4 +1,4 @@
-package org.veripacks.data.usagesreader
+package org.veripacks.data.dependenciesreader
 
 class UsageScope {
    val o1: java.util.List[String] = null

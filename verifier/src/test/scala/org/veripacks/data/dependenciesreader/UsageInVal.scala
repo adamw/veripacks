@@ -1,4 +1,4 @@
-package org.veripacks.data.usagesreader
+package org.veripacks.data.dependenciesreader
 
 class UsageInVal {
   val f1 = new Cls1

@@ -1,4 +1,4 @@
-package org.veripacks.reader.usages
+package org.veripacks.reader.dependencies
 
 import org.objectweb.asm.{Opcodes, ClassVisitor}
 

@@ -1,23 +1,18 @@
-package org.veripacks.reader.usages
+package org.veripacks.reader.dependencies
 
-import org.veripacks._
 import com.typesafe.scalalogging.slf4j.Logging
 import collection.mutable.ListBuffer
-import org.veripacks.ClassName
-import org.veripacks.ClassUsage
 import org.objectweb.asm._
-import org.objectweb.asm.signature.SignatureVisitor
-import org.veripacks.ClassName
-import org.veripacks.ClassUsage
+import org.veripacks.{Pkg, Export, ClassName, ClassUsage}
 
 @Export
-class ClassUsagesReader extends Logging {
-  def read(usagesIn: ClassName, classReader: ClassReader, scope: Iterable[Pkg]): Iterable[ClassUsage] = {
+class ClassDependenciesReader extends Logging {
+  def read(dependenciesOf: ClassName, classReader: ClassReader, scope: Iterable[Pkg]): Iterable[ClassUsage] = {
     def inScope(className: ClassName) = {
       scope.exists(className.pkg.isSubpackageOf(_))
     }
 
-    logger.debug(s"Reading usages in $usagesIn with scope $scope.")
+    logger.debug(s"Reading dependencies of $dependenciesOf with scope $scope.")
 
     val sourceFileNameVisitor = new SourceFileNameVisitor
     classReader.accept(sourceFileNameVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES)
@@ -29,8 +24,8 @@ class ClassUsagesReader extends Logging {
 
     val usages = ListBuffer[ClassUsage]()
     for ((className, classUsageDetail) <- dependencyVisitor.usages) {
-      if (inScope(className) && className != usagesIn) {
-        usages += ClassUsage(className, usagesIn, classUsageDetail)
+      if (inScope(className) && className != dependenciesOf) {
+        usages += ClassUsage(className, dependenciesOf, classUsageDetail)
       }
     }
 
