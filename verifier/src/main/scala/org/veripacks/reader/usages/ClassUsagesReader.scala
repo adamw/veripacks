@@ -12,14 +12,12 @@ import org.veripacks.ClassUsage
 
 @Export
 class ClassUsagesReader extends Logging {
-  def read(usagesIn: ClassName, scope: Iterable[Pkg]): Iterable[ClassUsage] = {
+  def read(usagesIn: ClassName, classReader: ClassReader, scope: Iterable[Pkg]): Iterable[ClassUsage] = {
     def inScope(className: ClassName) = {
       scope.exists(className.pkg.isSubpackageOf(_))
     }
 
     logger.debug(s"Reading usages in $usagesIn with scope $scope.")
-
-    val classReader = new ClassReader(usagesIn.fullName)
 
     val sourceFileNameVisitor = new SourceFileNameVisitor
     classReader.accept(sourceFileNameVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES)
