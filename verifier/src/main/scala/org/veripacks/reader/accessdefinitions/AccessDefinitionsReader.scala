@@ -3,6 +3,7 @@ package org.veripacks.reader.accessdefinitions
 import org.veripacks._
 import org.objectweb.asm.{Type, ClassReader}
 
+@Export
 class AccessDefinitionsReader {
   import AccessDefinitionsReader._
 
