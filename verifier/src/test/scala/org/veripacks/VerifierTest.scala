@@ -6,13 +6,21 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 
 class VerifierTest extends FlatSpec with ShouldMatchers {
-  it should "work" in {
+  it should "report errors" in {
     // When
     val result = new Verifier().verify(List("org.veripacks.data.t1"))
 
     // Then
     result.brokenConstraints should be (List(ClassUsage(from(classOf[Class112]), from(classOf[Class121]),
       MethodSignatureUsageDetail("Class121.scala", "i2"))))
+  }
+
+  it should "report no errors" in {
+    // When
+    val result = new Verifier().verify(List("org.veripacks.data.t2"))
+
+    // Then
+    result.brokenConstraints should be (Nil)
   }
 
   private def from(cls: Class[_]) = new ClassName(Pkg(cls.getPackage.toString), cls.getName)
