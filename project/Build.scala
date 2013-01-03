@@ -4,10 +4,17 @@ import Keys._
 object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq (
     organization  := "org.veripacks",
-    version       := "0.0.1-SNAPSHOT",
+    version       := "0.1-SNAPSHOT",
     scalaVersion  := "2.10.0-RC5",
     scalacOptions += "",
-    licenses      := ("Apache2", new java.net.URL("http://www.apache.org/licenses/LICENSE-2.0.txt")) :: Nil
+    licenses      := ("Apache2", new java.net.URL("http://www.apache.org/licenses/LICENSE-2.0.txt")) :: Nil,
+    publishTo     <<= (version) { version: String =>
+      val nexus = "http://nexus.softwaremill.com/content/repositories/"
+      if (version.trim.endsWith("SNAPSHOT"))  Some("softwaremill-public-snapshots" at nexus + "snapshots/")
+      else                                    Some("softwaremill-public-releases"  at nexus + "releases/")
+    },
+    credentials   += Credentials(Path.userHome / ".ivy2" / ".credentials"),
+    publishMavenStyle := true
   ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings
 }
 
@@ -30,7 +37,7 @@ object VeripacksBuild extends Build {
   lazy val root: Project = Project(
     "veripacks-root",
     file("."),
-    settings = buildSettings
+    settings = buildSettings ++ Seq(publishArtifact := false)
   ) aggregate(annotations, verifier, selfTest)
 
   lazy val annotations: Project = Project(
@@ -42,12 +49,20 @@ object VeripacksBuild extends Build {
   lazy val verifier: Project = Project(
     "veripacks-verifier",
     file("verifier"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= testing ++ Seq(asm, scalaLogging))
+    settings = buildSettings ++ Seq(
+      libraryDependencies ++= testing ++ Seq(asm, scalaLogging),
+      // For some reason trying to run veripacks-verifier/compile:doc in SBT generates an error ... maybe that's a
+      // 2.10-RC issue. Disabling for now.
+      publishArtifact in (Compile, packageDoc) := false
+    )
   ) dependsOn(annotations)
 
   lazy val selfTest: Project = Project(
     "veripacks-self-test",
     file("self-test"),
-    settings = buildSettings ++ Seq(libraryDependencies ++= testing)
+    settings = buildSettings ++ Seq(
+      libraryDependencies ++= testing,
+      publishArtifact := false
+    )
   ) dependsOn(verifier)
 }
