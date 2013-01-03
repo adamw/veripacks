@@ -66,12 +66,12 @@ The project files are deployed to SoftwareMill's public Nexus repository:
     <repository>
         <id>SotwareMillPublicReleases</id>
         <name>SotwareMill Public Releases</name>
-        <url>http://tools.softwaremill.pl/nexus/content/repositories/releases/</url>
+        <url>http://nexus.softwaremill.com/content/repositories/releases/</url>
     </repository>
     <repository>
         <id>SotwareMillPublicSnapshots</id>
         <name>SotwareMill Public Snapshots</name>
-        <url>http://tools.softwaremill.pl/nexus/content/repositories/snapshots/</url>
+        <url>http://nexus.softwaremill.com/content/repositories/snapshots/</url>
     </repository>
 
 What's next?
