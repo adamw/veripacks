@@ -11,21 +11,32 @@ Veripacks allows to specify which classes from a package should be visible, and 
 
 This is similar to package-private access in Java, however Veripacks respects package parent-child dependencies. While
 usually the package is just a string identifier, Veripacks treats packages in a hierarchical way. For example,
-`foo.bar.baz` is a subpackage of `foo.bar`. That means that exporting a class not only hides non-exported classes, but
-also all classes from subpackages. The main idea here is that if some classes from a package are exported, the code in
-the subpackages is only used to from within the main package.
+`foo.bar.baz` is a subpackage of `foo.bar`. That means that exporting a class not only hides other classes from the
+same package, but also classes from subpackages.
+
+In some cases, Veripacks can be used to replace a separate build module. It aims to be a scalable and composable
+solution, allowing for multi-layered exports, that is specifying access both for small pieces of code and large
+functionalities.
 
 Veripacks currently defines two annotations:
-* `@Export` - applicable to a class, specifies that this class should be visible to other packages. Several classes in
-one package can be exported.
+* `@Export` - applicable to a class, specifies that the annotated class should be visible to other packages. Classes
+without the annotation but in the same package, and all classes in subpackages won't be visible. Several classes
+in one package can be exported.
 * `@ExportAll` - applicable to a package (in `package-info.java`), specifies that all classes and subpackages should be
 exported. Has only documentational significance, as this is the default for all packages if no classes are explicitly
 exported.
 
-Access rules:
+Access rules
+------------
+
+Access rules should be pretty straightforward and generally work "as expected"; Veripacks is generally always
+transitive wrt subpackages and respects package parent-child relationships.
+
+More formally:
 * subpackages can always access classes from parent packages
 * within a package, all classes are visible
-* otherwise a class can be used if it is
+* otherwise a class `A` can be used in `B` if it is exported, looking from the package that is the closest parent of
+both `A` and `B`
 
 How to use it?
 --------------
@@ -84,6 +95,11 @@ Notes
 
 Veripacks is also used to verify itself - the code contains some @Export annotations, usage of which is verified by the
 single test in the `self-test` module.
+
+Other tools, like Classycle or Structure 101 also allow similar verification to be done. Veripacks differes mainly by:
+* the export/import metadata is kept close to the code itself, by using class/package annotations, instead of specifying
+the metadata upfront in an "architecture" file or keeping it in an external file
+* packages are treated in a hierarchical manner, with proper parent-child relationships
 
 #### Version 0.1 (?? January 2013)
 
