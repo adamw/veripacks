@@ -3,7 +3,6 @@ package org.veripacks
 import org.veripacks.reader.ClassNamesLister
 import org.veripacks.reader.dependencies.ClassDependenciesReader
 import org.veripacks.reader.accessdefinitions.{AccessDefinitionsReader, AccessDefinitionsAccumulator}
-import org.objectweb.asm.ClassReader
 
 class Verifier {
   def verify(rootPackage: String): VerifyResult = verify(List(rootPackage))
@@ -35,7 +34,7 @@ class Verifier {
     val accessDefinitionsAccumulator = new AccessDefinitionsAccumulator()
 
     val classUsages = classes.flatMap { className =>
-      val classReader = new ClassReader(className.fullName)
+      val classReader = ClassReaderProducer.create(className)
 
       val exportDefinition = accessDefinitionsReader.readFor(className, classReader)
       accessDefinitionsAccumulator.addExportDefinition(className.pkg, exportDefinition)

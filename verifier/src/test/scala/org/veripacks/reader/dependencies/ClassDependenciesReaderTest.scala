@@ -2,8 +2,7 @@ package org.veripacks.reader.dependencies
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
-import org.veripacks.{RootPkg, Pkg, ClassName}
-import org.objectweb.asm.ClassReader
+import org.veripacks.{ClassReaderProducer, Pkg, ClassName}
 
 class ClassDependenciesReaderTest extends FlatSpec with ShouldMatchers {
   val rootPkg = Pkg("org.veripacks.data.dependenciesreader")
@@ -32,7 +31,7 @@ class ClassDependenciesReaderTest extends FlatSpec with ShouldMatchers {
   for (testData <- testDatas) {
     it should s"read dependencies in ${testData.usagesIn.name} with scope ${testData.scope}" in {
       // When
-      val result = new ClassDependenciesReader().read(testData.usagesIn, new ClassReader(testData.usagesIn.fullName), testData.scope)
+      val result = new ClassDependenciesReader().read(testData.usagesIn, ClassReaderProducer.create(testData.usagesIn), testData.scope)
 
       // Then
       val usedClasses = result.map(cu => cu.cls).toSet
