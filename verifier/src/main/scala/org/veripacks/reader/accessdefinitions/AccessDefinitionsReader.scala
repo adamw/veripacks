@@ -2,9 +2,10 @@ package org.veripacks.reader.accessdefinitions
 
 import org.veripacks._
 import org.objectweb.asm.{Type, ClassReader}
+import com.typesafe.scalalogging.slf4j.Logging
 
 @Export
-class AccessDefinitionsReader {
+class AccessDefinitionsReader extends Logging {
   import AccessDefinitionsReader._
 
   def readFor(className: ClassName, classReader: ClassReader): ExportDefinition = {
@@ -24,8 +25,14 @@ class AccessDefinitionsReader {
 
   private def resultFromAnnotation(className: ClassName, annotation: Type): ExportDefinition = {
     annotation match {
-      case ExportType => ExportClassesDefinition(Set(className))
-      case ExportAllType => ExportAllDefinition
+      case ExportType => {
+        logger.debug(s"Found an @Export annotation on ${className.fullName}.")
+        ExportClassesDefinition(Set(className))
+      }
+      case ExportAllType => {
+        logger.debug(s"Found an @ExportAll annotation on ${className.fullName}.")
+        ExportAllDefinition
+      }
       case _ => ExportUndefinedDefinition
     }
   }

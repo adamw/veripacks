@@ -1,13 +1,16 @@
 package org.veripacks
 
 import scala.annotation.tailrec
+import com.typesafe.scalalogging.slf4j.Logging
 
-class ClassUsageVerifier(accessDefinitions: AccessDefinitions) {
+class ClassUsageVerifier(accessDefinitions: AccessDefinitions) extends Logging {
   def isAllowed(classUsage: ClassUsage): Boolean = {
     val referencedPkg = classUsage.cls.pkg
     val usedInPkg = classUsage.usedIn.pkg
 
-    isAllowed(referencedPkg, usedInPkg, Some(classUsage.cls))
+    val allowed = isAllowed(referencedPkg, usedInPkg, Some(classUsage.cls))
+    logger.debug(s"Usage of ${classUsage.cls.fullName} in ${classUsage.usedIn.fullName} is ${if (allowed) "" else "not "}allowed.")
+    allowed
   }
 
   @tailrec

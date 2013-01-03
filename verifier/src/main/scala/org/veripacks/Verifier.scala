@@ -3,8 +3,9 @@ package org.veripacks
 import org.veripacks.reader.ClassNamesLister
 import org.veripacks.reader.dependencies.ClassDependenciesReader
 import org.veripacks.reader.accessdefinitions.{AccessDefinitionsReader, AccessDefinitionsAccumulator}
+import com.typesafe.scalalogging.slf4j.Logging
 
-class Verifier {
+class Verifier extends Logging {
   def verify(rootPackage: String): VerifyResult = verify(List(rootPackage))
 
   def verify(rootPackages: java.util.Collection[String]): VerifyResult = {
@@ -15,6 +16,9 @@ class Verifier {
   def verify(rootPackages: Iterable[String]): VerifyResult = {
     val pkgs = rootPackages.map(Pkg(_))
     val classes = listClassesFromAllPackages(pkgs)
+
+    logger.info(s"Checking ${pkgs.size} packages, containing ${classes.size} classes.")
+
     val (classUsages, accessDefinitionsOrErrors) = readUsagesAndAccessDefinitions(pkgs, classes)
 
     accessDefinitionsOrErrors match {

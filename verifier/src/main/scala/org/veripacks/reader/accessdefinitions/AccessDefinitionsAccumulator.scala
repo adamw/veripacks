@@ -2,9 +2,10 @@ package org.veripacks.reader.accessdefinitions
 
 import org.veripacks._
 import scala.collection.mutable.ListBuffer
+import com.typesafe.scalalogging.slf4j.Logging
 
 @Export
-class AccessDefinitionsAccumulator {
+class AccessDefinitionsAccumulator extends Logging {
   private val defs = collection.mutable.HashMap[Pkg, ExportDefinition]()
   private val errors = ListBuffer[AccessDefinitionError]()
 
@@ -37,8 +38,10 @@ class AccessDefinitionsAccumulator {
 
   def build: Either[List[AccessDefinitionError], AccessDefinitions] = {
     if (errors.size == 0) {
+      logger.debug(s"Building access definitions; Size: ${defs.size}")
       Right(AccessDefinitions(defs.toMap))
     } else {
+      logger.debug(s"Building access definitions; Number of errors: ${errors.size}")
       Left(errors.toList)
     }
   }
