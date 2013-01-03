@@ -31,7 +31,7 @@ object VeripacksBuild extends Build {
     "veripacks-root",
     file("."),
     settings = buildSettings
-  ) aggregate(annotations, verifier)
+  ) aggregate(annotations, verifier, selfTest)
 
   lazy val annotations: Project = Project(
     "veripacks-annotations",
@@ -44,4 +44,10 @@ object VeripacksBuild extends Build {
     file("verifier"),
     settings = buildSettings ++ Seq(libraryDependencies ++= testing ++ Seq(asm, scalaLogging))
   ) dependsOn(annotations)
+
+  lazy val selfTest: Project = Project(
+    "veripacks-self-test",
+    file("self-test"),
+    settings = buildSettings ++ Seq(libraryDependencies ++= testing)
+  ) dependsOn(verifier)
 }
