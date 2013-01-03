@@ -7,13 +7,13 @@ import org.veripacks.{Pkg, ClassName}
 class ClassNamesListerTest extends FlatSpec with ShouldMatchers {
   it should "list classes that are on the classpath in a folder" in {
     // When
-    val result = new ClassNamesLister().list(Pkg("org.veripacks.data.t1"))
+    val result = new ClassNamesLister().list(Pkg("org.veripacks.data.accessdefinitions"))
 
     // Then
-    result should have size (4)
+    result should have size (3)
     result.foreach(_.name should not include ("."))
-    result should contain (ClassName(Pkg("org.veripacks.data.t1.p11"), "Class112"))
-    result should contain (ClassName(Pkg("org.veripacks.data.t1.p12"), "package-info"))
+    result should contain (ClassName(Pkg("org.veripacks.data.accessdefinitions"), "Cls1NoAnnotation"))
+    result should contain (ClassName(Pkg("org.veripacks.data.accessdefinitions"), "package-info"))
   }
 
   it should "list classes that are on the classpath in a jar" in {
