@@ -11,8 +11,15 @@ class VerifierTest extends FlatSpec with ShouldMatchers {
     val result = new Verifier().verify(List("org.veripacks.data.t1"))
 
     // Then
-    result.brokenConstraints should be (List(ClassUsage(from(classOf[Class112]), from(classOf[Class121]),
-      MethodSignatureUsageDetail("Class121.scala", "i2"))))
+    result match {
+      case VerifyResultBrokConstraints(brokenConstraints) => {
+        brokenConstraints.size should be > (0)
+        brokenConstraints.map(_.cls).toSet should be (Set(from(classOf[Class112])))
+        brokenConstraints.map(_.usedIn).toSet should be (Set(from(classOf[Class121])))
+        brokenConstraints.map(_.detail.sourceFileName).toSet should be (Set("Class121.scala"))
+      }
+      case _ => fail(s"Expected a broken constraints result, but got $result!")
+    }
   }
 
   it should "report no errors" in {
@@ -20,8 +27,8 @@ class VerifierTest extends FlatSpec with ShouldMatchers {
     val result = new Verifier().verify(List("org.veripacks.data.t2"))
 
     // Then
-    result.brokenConstraints should be (Nil)
+    result should be (VerifyResultOk)
   }
 
-  private def from(cls: Class[_]) = new ClassName(Pkg(cls.getPackage.toString), cls.getName)
+  private def from(cls: Class[_]) = new ClassName(Pkg(cls.getPackage.getName), cls.getSimpleName)
 }
