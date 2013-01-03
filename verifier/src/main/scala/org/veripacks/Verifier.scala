@@ -6,9 +6,9 @@ import org.veripacks.reader.accessdefinitions.{AccessDefinitionsReader, AccessDe
 import org.objectweb.asm.ClassReader
 
 class Verifier {
-  def verify(rootPackage: String) = verify(List(rootPackage))
+  def verify(rootPackage: String): VerifyResult = verify(List(rootPackage))
 
-  def verify(rootPackages: java.util.Collection[String]) = {
+  def verify(rootPackages: java.util.Collection[String]): VerifyResult = {
     import scala.collection.JavaConverters._
     verify(rootPackages.asScala)
   }
