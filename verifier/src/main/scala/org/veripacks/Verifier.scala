@@ -6,6 +6,13 @@ import org.veripacks.reader.accessdefinitions.{AccessDefinitionsReader, AccessDe
 import org.objectweb.asm.ClassReader
 
 class Verifier {
+  def verify(rootPackage: String) = verify(List(rootPackage))
+
+  def verify(rootPackages: java.util.Collection[String]) = {
+    import scala.collection.JavaConverters._
+    verify(rootPackages.asScala)
+  }
+
   def verify(rootPackages: Iterable[String]): VerifyResult = {
     val pkgs = rootPackages.map(Pkg(_))
     val classes = listClassesFromAllPackages(pkgs)
