@@ -97,6 +97,7 @@ The project files are deployed to SoftwareMill's public Nexus repository:
         <groupId>org.veripacks</groupId>
         <artifactId>veripacks-verifier_2.10</artifactId>
         <version>0.1</version>
+        <scope>test</scope>
     </dependency>
 
     <repository>
