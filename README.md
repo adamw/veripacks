@@ -37,6 +37,35 @@ More formally:
 * otherwise a class `A` can be used in `B` if it is exported, looking from the package that is the closest parent of
 both `A` and `B`
 
+Example
+-------
+
+Using a bit of an imaginary syntax to make things compact:
+
+    package foo.bar.p1 {
+      @Export
+      class A { ... }
+
+      class B { ... }
+    }
+
+    package foo.bar.p1.sub_p1 {
+      class C { ... }
+    }
+
+    package foo.bar.p2 {
+      class Test {
+        // ok, A is exported
+        new A()
+
+        // illegal, B is not exported
+        new B()
+
+        // illegal, C is in a subpackage of p1, and p1 only exports A
+        new C()
+      }
+    }
+
 How to use it?
 --------------
 
@@ -47,7 +76,7 @@ No build plugins or such are needed; just create a new test, with the following 
 
     public void runVeripacksTest() {
       new Verifier()
-        .verify("foo.bar.mainpackage")
+        .verify("foo.bar")
         .throwIfNotOk
     }
 
