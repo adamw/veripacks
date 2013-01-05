@@ -7,12 +7,12 @@ What is it?
 Veripacks implements some of the ideas from the blog post
 ["Let's turn packages into a module system"](http://www.warski.org/blog/2012/11/lets-turn-packages-into-a-module-system/).
 
-Veripacks allows to specify which classes from a package should be visible, and verify that the specification is met.
+Veripacks allows to specify which classes from a package should be accessible, and verify that the specification is met.
 
-This is similar to package-private access in Java, however Veripacks respects package parent-child dependencies. While
-usually the package is just a string identifier, Veripacks treats packages in a hierarchical way. For example,
-`foo.bar.baz` is a subpackage of `foo.bar`. That means that exporting a class not only hides other classes from the
-same package, but also classes from subpackages.
+This is similar to package-private access in Java, however Veripacks extends this to subpackages, respecting package
+parent-child dependencies. While usually the package is just a string identifier, Veripacks treats packages in a
+hierarchical way. For example, `foo.bar.baz` is a subpackage of `foo.bar`. That means that exporting a class not only
+hides other classes from the same package, but also classes from subpackages.
 
 In some cases, Veripacks can be used to replace a separate build module. It aims to be a scalable and composable
 solution, allowing for multi-layered exports, that is specifying access both for small pieces of code and large
@@ -29,8 +29,7 @@ exported.
 Access rules
 ------------
 
-Access rules should be pretty straightforward and generally work "as expected"; Veripacks is generally always
-transitive wrt subpackages and respects package parent-child relationships.
+Access rules should be pretty straightforward and work "as expected".
 
 More formally:
 * subpackages can always access classes from parent packages
@@ -52,8 +51,8 @@ No build plugins or such are needed; just create a new test, with the following 
         .throwIfNotOk
     }
 
-This will throw an exception if there are some access violations. You can also inspect the result of the `verify` call,
-which contains more detailed information (also included in the exception message).
+This will throw an exception if there are some specification violations. You can also inspect the result of the
+`verify` call, which contains more detailed information (also included in the exception message).
 
 The project files are deployed to SoftwareMill's public Nexus repository:
 
@@ -85,7 +84,7 @@ What's next?
 
 The last two points will allow to constrain usage of external libraries. For example, if using Hibernate, we could
 specify that only classes from the `org.hibernate` package should be accessible, while classes from
-`org.hibernate.internal` - not. Furthermore, be specifying that Hibernate needs to be explicitly imported, we could
+`org.hibernate.internal` - not. Furthermore, by specifying that Hibernate needs to be explicitly imported, we could
 verify that only packages that contain a `@Import("org.hibernate")` can access the Hibernate classes.
 
 This is similar to creating a separate build-module and adding the Hibernate dependency to it only.
@@ -93,10 +92,10 @@ This is similar to creating a separate build-module and adding the Hibernate dep
 Notes
 -----
 
-Veripacks is also used to verify itself - the code contains some @Export annotations, usage of which is verified by the
-single test in the `self-test` module.
+Veripacks is also used to verify itself - the code contains some `@Export` annotations, usage of which is verified by
+the single test in the `self-test` module.
 
-Other tools, like Classycle or Structure 101 also allow similar verification to be done. Veripacks differes mainly by:
+Other tools, like Classycle or Structure 101 also allow similar verification to be done. Veripacks differs mainly by:
 * the export/import metadata is kept close to the code itself, by using class/package annotations, instead of specifying
 the metadata upfront in an "architecture" file or keeping it in an external file
 * packages are treated in a hierarchical manner, with proper parent-child relationships
