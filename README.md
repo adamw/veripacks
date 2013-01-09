@@ -138,6 +138,8 @@ Other tools, like Classycle or Structure 101 also allow similar verification to 
 the metadata upfront in an "architecture" file or keeping it in an external file
 * packages are treated in a hierarchical manner, with proper parent-child relationships
 
+Licensed under Apache2.
+
 #### Version 0.1 (5 January 2013)
 
 * Initial release
