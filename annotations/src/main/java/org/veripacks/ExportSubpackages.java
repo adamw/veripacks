@@ -7,8 +7,10 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
-public @interface Import {
-    String[]    packages()  default {};
-    Class[]     classes()   default {};
+public @interface ExportSubpackages {
+    /**
+     * @return Names of direct subpackages to export. E.g. to export the "foo.bar.baz" subpackage from "foo.bar",
+     * the value should be "baz".
+     */
+    String[]    value()  default {};
 }
-
