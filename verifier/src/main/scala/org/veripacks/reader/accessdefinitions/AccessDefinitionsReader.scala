@@ -8,7 +8,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 class AccessDefinitionsReader extends Logging {
   import AccessDefinitionsReader._
 
-  def readFor(className: ClassName, classReader: ClassReader): ExportDefinition = {
+  def readFor(className: ClassName, classReader: ClassReader): ExportDef = {
     val classAnnotationsVisitor = new ClassAnnotationsVisitor()
     classReader.accept(classAnnotationsVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES)
 
@@ -17,23 +17,23 @@ class AccessDefinitionsReader extends Logging {
       .filter(ExportAnnotations.contains(_))
 
     exportAnnotations.toList match {
-      case Nil => ExportUndefinedDefinition
+      case Nil => ExportDef.Undefined
       case List(annotation) => resultFromAnnotation(className, annotation)
       case l => throw new IllegalArgumentException(s"More than one export annotation on $className: $l")
     }
   }
 
-  private def resultFromAnnotation(className: ClassName, annotation: Type): ExportDefinition = {
+  private def resultFromAnnotation(className: ClassName, annotation: Type): ExportDef = {
     annotation match {
       case ExportType => {
         logger.debug(s"Found an @Export annotation on ${className.fullName}.")
-        ExportClassesDefinition(Set(className))
+        ExportDef(ExportSpecificClassesDef(Set(className)))
       }
       case ExportAllType => {
         logger.debug(s"Found an @ExportAll annotation on ${className.fullName}.")
-        ExportAllDefinition
+        ExportDef(ExportAllClassesDef, ExportAllPkgsDef)
       }
-      case _ => ExportUndefinedDefinition
+      case _ => ExportDef.Undefined
     }
   }
 }

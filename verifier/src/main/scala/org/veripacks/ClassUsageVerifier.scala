@@ -19,10 +19,10 @@ class ClassUsageVerifier(accessDefinitions: AccessDefinitions) extends Logging {
     if (usedInPkg.isSubpackageOf(referencedPkg)) {
       true
     } else {
-      val referencedExportDef = accessDefinitions.exports.getOrElse(referencedPkg, ExportUndefinedDefinition)
+      val referencedExportDef = accessDefinitions.exports.getOrElse(referencedPkg, ExportDef.Undefined)
 
-      val exportDefAllows = referencedExportDef match {
-        case ExportClassesDefinition(classNames) => {
+      val exportDefAllows = referencedExportDef.classes match {
+        case ExportSpecificClassesDef(classNames) => {
           referencedClassNameOpt.map(classNames.contains(_)).getOrElse(false)
         }
         case _ => true

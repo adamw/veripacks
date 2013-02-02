@@ -22,19 +22,19 @@ class ClassUsageVerifierTest extends FlatSpec with ShouldMatchers {
 
   val cls1_in_pkg2 = ClassName(pkg2, "cls1_in_pkg2")
 
-  val noExport = Map[Pkg, ExportDefinition]()
+  val noExport = Map[Pkg, ExportDef]()
 
-  val oneExport = Map[Pkg, ExportDefinition](pkg1 -> ExportClassesDefinition(Set(cls1_in_pkg1)))
+  val oneExport = Map[Pkg, ExportDef](pkg1 -> ExportDef(ExportSpecificClassesDef(Set(cls1_in_pkg1))))
 
-  val allExport = Map[Pkg, ExportDefinition](pkg1 -> ExportAllDefinition)
+  val allExport = Map[Pkg, ExportDef](pkg1 -> ExportDef.All)
 
-  val packageAndSubpackageExports = Map[Pkg, ExportDefinition](
-    pkg1 -> ExportClassesDefinition(Set(cls1_in_pkg1)),
-    pkg1_1 -> ExportClassesDefinition(Set(cls1_in_pkg1_1)))
+  val packageAndSubpackageExports = Map[Pkg, ExportDef](
+    pkg1 -> ExportDef(ExportSpecificClassesDef(Set(cls1_in_pkg1))),
+    pkg1_1 -> ExportDef(ExportSpecificClassesDef(Set(cls1_in_pkg1_1))))
 
-  val subSubPackageExports = Map[Pkg, ExportDefinition](pkg1_1_1 -> ExportClassesDefinition(Set(cls1_in_pkg1_1_1)))
+  val subSubPackageExports = Map[Pkg, ExportDef](pkg1_1_1 -> ExportDef(ExportSpecificClassesDef(Set(cls1_in_pkg1_1_1))))
 
-  val testData = List[(String, Map[Pkg, ExportDefinition], ClassName, ClassName, Boolean)](
+  val testData = List[(String, Map[Pkg, ExportDef], ClassName, ClassName, Boolean)](
     ("allow using class in same package without access restrictions",
       noExport, cls1_in_pkg1, cls2_in_pkg1, true),
     ("allow using class in same package with access restrictions",

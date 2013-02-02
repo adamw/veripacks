@@ -8,9 +8,9 @@ class AccessDefinitionsReaderTest extends FlatSpec with ShouldMatchers {
   val rootPkg = Pkg("org.veripacks.data.accessdefinitions")
 
   val readAccessDefinitionsTestData = List(
-    (ClassName(rootPkg, "Cls1NoAnnotation"), ExportUndefinedDefinition),
-    (ClassName(rootPkg, "Cls2ExportAnnotation"), ExportClassesDefinition(Set(ClassName(rootPkg, "Cls2ExportAnnotation")))),
-    (ClassName(rootPkg, "package-info"), ExportAllDefinition)
+    (ClassName(rootPkg, "Cls1NoAnnotation"), ExportDef.Undefined),
+    (ClassName(rootPkg, "Cls2ExportAnnotation"), ExportDef(ExportSpecificClassesDef(Set(ClassName(rootPkg, "Cls2ExportAnnotation"))))),
+    (ClassName(rootPkg, "package-info"), ExportDef.All)
   )
 
   for ((className, expectedResult) <- readAccessDefinitionsTestData) {

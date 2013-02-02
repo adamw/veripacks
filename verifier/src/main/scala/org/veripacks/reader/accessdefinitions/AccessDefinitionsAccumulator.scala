@@ -6,24 +6,44 @@ import com.typesafe.scalalogging.slf4j.Logging
 
 @Export
 class AccessDefinitionsAccumulator extends Logging {
-  private val defs = collection.mutable.HashMap[Pkg, ExportDefinition]()
+  private val defs = collection.mutable.HashMap[Pkg, ExportDef]()
   private val errors = ListBuffer[AccessDefinitionError]()
 
-  def addExportDefinition(pkg: Pkg, exportDefinition: ExportDefinition) {
-    def mixedExportWithExportAll() {
+  def addExportDefinition(pkg: Pkg, exportDefinition: ExportDef) {
+    def mixedExportWithExportAll() = {
       errors += AccessDefinitionError(s"Package $pkg is annotated with @ExportAll and also contains classes annotated with @Export!")
+      None
     }
 
-    def merge(def1: ExportDefinition, def2: ExportDefinition) {
+    def duplicatedExportAllClasses() = {
+      errors += AccessDefinitionError(s"Package $pkg is annotated with @ExportAll and with @ExportAllClasses!")
+      None
+    }
+
+    def mergeClasses(def1: ExportClassesDef, def2: ExportClassesDef) = {
       (def1, def2) match {
-        case (ExportUndefinedDefinition, other) => defs(pkg) = other
-        case (other, ExportUndefinedDefinition) => defs(pkg) = other
-        case (ExportAllDefinition, ExportAllDefinition) => // Ignore
-        case (ExportAllDefinition, _) => mixedExportWithExportAll()
-        case (_, ExportAllDefinition) => mixedExportWithExportAll()
-        case (ExportClassesDefinition(set1), ExportClassesDefinition(set2)) => {
-          defs(pkg) = ExportClassesDefinition(set1 ++ set2)
+        case (ExportClassesUndefinedDef, other) => Some(other)
+        case (other, ExportClassesUndefinedDef) => Some(other)
+        case (ExportAllClassesDef, ExportAllClassesDef) => duplicatedExportAllClasses()
+        case (ExportAllClassesDef, _) => mixedExportWithExportAll()
+        case (_, ExportAllClassesDef) => mixedExportWithExportAll()
+        case (ExportSpecificClassesDef(set1), ExportSpecificClassesDef(set2)) => {
+          Some(ExportSpecificClassesDef(set1 ++ set2))
         }
+      }
+    }
+
+    def mergePkgs(def1: ExportPkgsDef, def2: ExportPkgsDef) = {
+      // TODO
+      Some(def1)
+    }
+
+    def merge(def1: ExportDef, def2: ExportDef) {
+      for {
+        mergedClasses <- mergeClasses(def1.classes, def2.classes)
+        mergedPkgs <- mergePkgs(def1.pkgs, def2.pkgs)
+      } {
+        defs(pkg) = ExportDef(mergedClasses, mergedPkgs)
       }
     }
 
