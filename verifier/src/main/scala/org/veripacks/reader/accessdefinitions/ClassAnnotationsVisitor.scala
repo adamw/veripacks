@@ -1,15 +1,35 @@
 package org.veripacks.reader.accessdefinitions
 
-import org.objectweb.asm.{Type, Opcodes, ClassVisitor}
-import org.veripacks.Export
+import org.objectweb.asm.{AnnotationVisitor, Type, Opcodes, ClassVisitor}
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 class ClassAnnotationsVisitor extends ClassVisitor(Opcodes.ASM4) {
-  val annotations = collection.mutable.HashSet[Type]()
+  val annotationsWithValues = mutable.HashMap[Type, mutable.HashMap[String, Any]]()
 
   override def visitAnnotation(desc: String, visible: Boolean) = {
     val `type` = Type.getType(desc)
-    annotations.add(`type`)
+    val values = new mutable.HashMap[String, Any]
+    annotationsWithValues.put(`type`, values)
 
-    null
+    new AnnotationValuesVisitor(values)
+  }
+}
+
+class AnnotationValuesVisitor(values: mutable.Map[String, Any]) extends AnnotationVisitor(Opcodes.ASM4) {
+  override def visit(name: String, value: Any) {
+    values(name) = value
+  }
+
+  override def visitArray(name: String) = {
+    val arrayValues = ListBuffer[Any]()
+    values(name) = arrayValues
+    new AnnotationArrayValuesVisitor(arrayValues)
+  }
+}
+
+class AnnotationArrayValuesVisitor(arrayValues: ListBuffer[Any]) extends AnnotationVisitor(Opcodes.ASM4) {
+  override def visit(name: String, value: Any) {
+    arrayValues += value
   }
 }

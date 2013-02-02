@@ -10,7 +10,7 @@ case class ExportDef(classes: ExportClassesDef, pkgs: ExportPkgsDef) {
 
 object ExportDef {
   def apply(classes: ExportClassesDef): ExportDef = ExportDef(classes, ExportPkgsUndefinedDef)
-  def apply(pkgs: ExportPkgsDef): ExportDef = ExportDef(ExportAllClassesDef, pkgs)
+  def apply(pkgs: ExportPkgsDef): ExportDef = ExportDef(ExportClassesUndefinedDef, pkgs)
 
   val Undefined = ExportDef(ExportClassesUndefinedDef, ExportPkgsUndefinedDef)
   val All = ExportDef(ExportAllClassesDef, ExportAllPkgsDef)

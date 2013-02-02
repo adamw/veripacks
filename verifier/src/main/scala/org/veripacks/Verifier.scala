@@ -40,8 +40,8 @@ class Verifier extends Logging {
     val classUsages = classes.flatMap { className =>
       val classReader = ClassReaderProducer.create(className)
 
-      val exportDefinition = accessDefinitionsReader.readFor(className, classReader)
-      accessDefinitionsAccumulator.addExportDefinition(className.pkg, exportDefinition)
+      val exportDefinitions = accessDefinitionsReader.readFor(className, classReader)
+      exportDefinitions.foreach(accessDefinitionsAccumulator.addExportDefinition(className.pkg, _))
 
       classDependenciesReader.read(className, classReader, pkgs)
     }
