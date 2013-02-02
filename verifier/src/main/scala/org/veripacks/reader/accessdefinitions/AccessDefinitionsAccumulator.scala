@@ -15,6 +15,11 @@ class AccessDefinitionsAccumulator extends Logging {
       None
     }
 
+    def mixedExportSubpackagesWithExportAll() = {
+      errors += AccessDefinitionError(s"Package $pkg is annotated with @ExportAll and with @ExportSubpackages!")
+      None
+    }
+
     def duplicatedExportAllClasses() = {
       errors += AccessDefinitionError(s"Package $pkg is annotated with @ExportAll and with @ExportAllClasses!")
       None
@@ -43,8 +48,8 @@ class AccessDefinitionsAccumulator extends Logging {
         case (ExportPkgsUndefinedDef, other) => Some(other)
         case (other, ExportPkgsUndefinedDef) => Some(other)
         case (ExportAllPkgsDef, ExportAllPkgsDef) => duplicatedExportAllPkgs()
-        case (ExportAllPkgsDef, _) => mixedExportWithExportAll()
-        case (_, ExportAllPkgsDef) => mixedExportWithExportAll()
+        case (ExportAllPkgsDef, _) => mixedExportSubpackagesWithExportAll()
+        case (_, ExportAllPkgsDef) => mixedExportSubpackagesWithExportAll()
         case (ExportSpecificPkgsDef(set1), ExportSpecificPkgsDef(set2)) => {
           Some(ExportSpecificPkgsDef(set1 ++ set2))
         }
