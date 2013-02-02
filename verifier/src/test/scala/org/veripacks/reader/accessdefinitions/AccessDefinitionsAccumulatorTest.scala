@@ -3,12 +3,14 @@ package org.veripacks.reader.accessdefinitions
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.veripacks._
-import org.veripacks.ExportClassesDef
 
 class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
   val pkg1 = Pkg("foo.bar.a")
+  val pkg1sub1 = Pkg("foo.bar.a.sub1")
+  val pkg1sub2 = Pkg("foo.bar.a.sub2")
   val pkg2 = Pkg("foo.bar.b")
   val pkg3 = Pkg("foo.bar.a.aa")
+  val pkg3sub1 = Pkg("foo.bar.a.aa.sub1")
 
   it should "accumulate several export classes definitions in the same pacakge" in {
     // When
@@ -62,7 +64,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     val acc = new AccessDefinitionsAccumulator
     acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
     acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls2")))))
-    acc.addExportDefinition(pkg2, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg2, "cls3")))))
+    acc.addExportDefinition(pkg2, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg2, "cls3"))), ExportAllPkgsDef))
     acc.addExportDefinition(pkg3, ExportDef.All)
 
     val result = acc.build
@@ -73,7 +75,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     val defs = result.right.get
     defs.exports should have size (3)
     defs.exports(pkg1) should be (ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1"), ClassName(pkg1, "cls2")))))
-    defs.exports(pkg2) should be (ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg2, "cls3")))))
+    defs.exports(pkg2) should be (ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg2, "cls3"))), ExportAllPkgsDef))
     defs.exports(pkg3) should be (ExportDef.All)
   }
 
@@ -91,5 +93,70 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     val defs = result.right.get
     defs.exports should have size (1)
     defs.exports(pkg1) should be (ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
+  }
+
+  it should "not overwrite specific with undefined definitions" in {
+    // When
+    val acc = new AccessDefinitionsAccumulator
+    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
+    acc.addExportDefinition(pkg1, ExportDef.Undefined)
+
+    val result = acc.build
+
+    // Then
+    result.isRight should be (true)
+
+    val defs = result.right.get
+    defs.exports should have size (1)
+    defs.exports(pkg1) should be (ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
+  }
+
+  it should "accumulate both export classes and export subpackages" in {
+    // When
+    val acc = new AccessDefinitionsAccumulator
+    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
+    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificPkgsDef(Set(pkg1sub1))))
+
+    acc.addExportDefinition(pkg2, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg2, "cls2")))))
+    acc.addExportDefinition(pkg2, ExportDef(ExportAllPkgsDef))
+
+    acc.addExportDefinition(pkg3, ExportDef(ExportAllClassesDef))
+    acc.addExportDefinition(pkg3, ExportDef(ExportSpecificPkgsDef(Set(pkg3sub1))))
+
+    val result = acc.build
+
+    // Then
+    result.isRight should be (true)
+
+    val defs = result.right.get
+    defs.exports should have size (3)
+
+    defs.exports(pkg1) should be (ExportDef(
+      ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1"))),
+      ExportSpecificPkgsDef(Set(pkg1sub1))))
+
+    defs.exports(pkg2) should be (ExportDef(
+      ExportSpecificClassesDef(Set(ClassName(pkg2, "cls2"))),
+      ExportAllPkgsDef))
+
+    defs.exports(pkg3) should be (ExportDef(
+      ExportAllClassesDef,
+      ExportSpecificPkgsDef(Set(pkg3sub1))))
+  }
+
+  it should "report an error if both export all classes/subpackages and export all definitions are used for a package" in {
+    // When
+    val acc = new AccessDefinitionsAccumulator
+    acc.addExportDefinition(pkg1, ExportDef(ExportAllClassesDef))
+    acc.addExportDefinition(pkg1, ExportDef.All)
+
+    acc.addExportDefinition(pkg2, ExportDef(ExportAllPkgsDef))
+    acc.addExportDefinition(pkg2, ExportDef.All)
+
+    val result = acc.build
+
+    // Then
+    result.isLeft should be (true)
+    result.left.get should have size (2)
   }
 }

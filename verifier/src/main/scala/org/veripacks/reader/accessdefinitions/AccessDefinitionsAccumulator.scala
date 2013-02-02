@@ -20,6 +20,11 @@ class AccessDefinitionsAccumulator extends Logging {
       None
     }
 
+    def duplicatedExportAllPkgs() = {
+      errors += AccessDefinitionError(s"Package $pkg is annotated with @ExportAll and with @ExportAllSubpackages!")
+      None
+    }
+
     def mergeClasses(def1: ExportClassesDef, def2: ExportClassesDef) = {
       (def1, def2) match {
         case (ExportClassesUndefinedDef, other) => Some(other)
@@ -34,8 +39,16 @@ class AccessDefinitionsAccumulator extends Logging {
     }
 
     def mergePkgs(def1: ExportPkgsDef, def2: ExportPkgsDef) = {
-      // TODO
-      Some(def1)
+      (def1, def2) match {
+        case (ExportPkgsUndefinedDef, other) => Some(other)
+        case (other, ExportPkgsUndefinedDef) => Some(other)
+        case (ExportAllPkgsDef, ExportAllPkgsDef) => duplicatedExportAllPkgs()
+        case (ExportAllPkgsDef, _) => mixedExportWithExportAll()
+        case (_, ExportAllPkgsDef) => mixedExportWithExportAll()
+        case (ExportSpecificPkgsDef(set1), ExportSpecificPkgsDef(set2)) => {
+          Some(ExportSpecificPkgsDef(set1 ++ set2))
+        }
+      }
     }
 
     def merge(def1: ExportDef, def2: ExportDef) {
