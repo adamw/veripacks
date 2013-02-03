@@ -6,6 +6,9 @@ case class AccessDefinitions(exports: Map[Pkg, ExportDef])
 case class ExportDef(classes: ExportClassesDef, pkgs: ExportPkgsDef) {
   def this(classes: ExportClassesDef) = this(classes, ExportPkgsUndefinedDef)
   def this(pkgs: ExportPkgsDef) = this(ExportAllClassesDef, pkgs)
+
+  def allClassesExported = classes == ExportAllClassesDef || this == ExportDef.Undefined
+  def allPkgsExported = pkgs == ExportAllPkgsDef || this == ExportDef.Undefined
 }
 
 object ExportDef {
