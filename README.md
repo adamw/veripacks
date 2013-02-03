@@ -7,7 +7,8 @@ What is it?
 Veripacks implements some of the ideas from the blog post
 ["Let's turn packages into a module system"](http://www.warski.org/blog/2012/11/lets-turn-packages-into-a-module-system/).
 
-Veripacks allows to specify which classes from a package should be accessible, and verify that the specification is met.
+Veripacks allows to specify which classes from a package hierarchy should be accessible, and verify that the
+specification is met.
 
 This is similar to package-private access in Java, however Veripacks extends this to subpackages, respecting package
 parent-child dependencies. While usually the package is just a string identifier, Veripacks treats packages in a
@@ -18,13 +19,20 @@ In some cases, Veripacks can be used to replace a separate build module. It aims
 solution, allowing for multi-layered exports, that is specifying access both for small pieces of code and large
 functionalities.
 
-Veripacks currently defines two annotations:
+Veripacks currently defines the following annotations:
 * `@Export` - applicable to a class, specifies that the annotated class should be visible to other packages. Classes
-without the annotation but in the same package, and all classes in subpackages won't be visible. Several classes
-in one package can be exported.
+without the annotation but in the same package, and all classes in non-exported subpackages won't be visible.
+Several classes in one package can be exported.
+* `@ExportSubpackages` - applicable to a package (in `package-info.java`), allows to specify which subpackages should
+be exported. Only classes/sub-subpackages exported by the subpackage will be exported by the package. The value of the
+annotation is an array of immediate subpackage names.
+* `@ExportAll` and `@ExportAllSubpackages`
 * `@ExportAll` - applicable to a package (in `package-info.java`), specifies that all classes and subpackages should be
 exported. Has only documentational significance, as this is the default for all packages if no classes are explicitly
 exported.
+
+Using an export-all annotation and an export-specific annotation for same element type (class, subpackage) will result
+in an error.
 
 Access rules
 ------------
@@ -32,7 +40,7 @@ Access rules
 Access rules should be pretty straightforward and work "as expected".
 
 More formally:
-* subpackages can always access classes from parent packages
+* packages can always access classes from parent packages
 * within a package, all classes are visible
 * otherwise a class `A` can be used in `B` if it is exported, looking from the package that is the closest parent of
 both `A` and `B`
@@ -114,13 +122,13 @@ The project files are deployed to SoftwareMill's public Nexus repository:
 What's next?
 ------------
 
-* allow exporting none/some/all subpackages, along with exporting none/some/all classes
 * add support for importing:
   * specify that a package can only be used if explicitly imported using a `@RequiresImport` annotation
   * support an `@Import` annotation to specify classes from which packages can be used in a package
 * allow to specify which classes/subpackages are exported in a separate file
+* IDE support
 
-The last two points will allow to constrain usage of external libraries. For example, if using Hibernate, we could
+The first two points will allow to constrain usage of external libraries. For example, if using Hibernate, we could
 specify that only classes from the `org.hibernate` package should be accessible, while classes from
 `org.hibernate.internal` - not. Furthermore, by specifying that Hibernate needs to be explicitly imported, we could
 verify that only packages that contain a `@Import("org.hibernate")` can access the Hibernate classes.
@@ -139,6 +147,11 @@ the metadata upfront in an "architecture" file or keeping it in an external file
 * packages are treated in a hierarchical manner, with proper parent-child relationships
 
 Licensed under Apache2.
+
+#### Version 0.2 (3 February 2013)
+
+* Support for exporting subpackages (`@ExportSubpackages`)
+* `@ExportAllClasses`, `@ExportAllSubpackages` annotations
 
 #### Version 0.1 (5 January 2013)
 
