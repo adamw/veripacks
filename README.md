@@ -26,10 +26,9 @@ Several classes in one package can be exported.
 * `@ExportSubpackages` - applicable to a package (in `package-info.java`), allows to specify which subpackages should
 be exported. Only classes/sub-subpackages exported by the subpackage will be exported by the package. The value of the
 annotation is an array of immediate subpackage names.
-* `@ExportAll` and `@ExportAllSubpackages`
-* `@ExportAll` - applicable to a package (in `package-info.java`), specifies that all classes and subpackages should be
-exported. Has only documentational significance, as this is the default for all packages if no classes are explicitly
-exported.
+* `@ExportAllClasses` and `@ExportAllSubpackages` - applicable to a package
+* `@ExportAll` - applicable to a package, specifies that all classes and subpackages should be exported. Has only
+documentational significance, as this is the default for all packages if no classes are explicitly exported.
 
 Using an export-all annotation and an export-specific annotation for same element type (class, subpackage) will result
 in an error.
@@ -111,12 +110,12 @@ The project files are deployed to SoftwareMill's public Nexus repository:
     <repository>
         <id>SotwareMillPublicReleases</id>
         <name>SotwareMill Public Releases</name>
-        <url>http://nexus.softwaremill.com/content/repositories/releases/</url>
+        <url>https://nexus.softwaremill.com/content/repositories/releases/</url>
     </repository>
     <repository>
         <id>SotwareMillPublicSnapshots</id>
         <name>SotwareMill Public Snapshots</name>
-        <url>http://nexus.softwaremill.com/content/repositories/snapshots/</url>
+        <url>https://nexus.softwaremill.com/content/repositories/snapshots/</url>
     </repository>
 
 What's next?
