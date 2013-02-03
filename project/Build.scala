@@ -9,7 +9,7 @@ object BuildSettings {
     scalacOptions += "",
     licenses      := ("Apache2", new java.net.URL("http://www.apache.org/licenses/LICENSE-2.0.txt")) :: Nil,
     publishTo     <<= (version) { version: String =>
-      val nexus = "http://nexus.softwaremill.com/content/repositories/"
+      val nexus = "https://nexus.softwaremill.com/content/repositories/"
       if (version.trim.endsWith("SNAPSHOT"))  Some("softwaremill-public-snapshots" at nexus + "snapshots/")
       else                                    Some("softwaremill-public-releases"  at nexus + "releases/")
     },
