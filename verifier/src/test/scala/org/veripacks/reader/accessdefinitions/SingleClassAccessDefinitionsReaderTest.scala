@@ -23,7 +23,8 @@ class SingleClassAccessDefinitionsReaderTest extends FlatSpec with ShouldMatcher
 
   for ((className, expectedResult) <- readAccessDefinitionsTestData) {
     it should s"read access definitions in $className" in {
-      new SingleClassAccessDefinitionsReader().readFor(className, ClassReaderProducer.create(className)).toSet should be (expectedResult)
+      new SingleClassAccessDefinitionsReader().readFor(className, ClassReaderProducer.create(className))
+        .exportDefs.toSet should be (expectedResult)
     }
   }
 }

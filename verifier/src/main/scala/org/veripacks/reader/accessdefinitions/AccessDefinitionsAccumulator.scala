@@ -9,7 +9,11 @@ class AccessDefinitionsAccumulator extends Logging {
   private val defs = collection.mutable.HashMap[Pkg, ExportDef]()
   private val errors = ListBuffer[AccessDefinitionError]()
 
-  def addExportDefinition(pkg: Pkg, exportDefinition: ExportDef) {
+  def addSingleClassAccessDefinitions(pkg: Pkg, accessDefinitions: SingleClassAccessDefinitions) {
+    accessDefinitions.exportDefs.foreach(addExportDefinition(pkg, _))
+  }
+
+  private def addExportDefinition(pkg: Pkg, exportDefinition: ExportDef) {
     def mixedExportWithExportAll() = {
       errors += AccessDefinitionError(s"Package $pkg is annotated with @ExportAll and also contains classes annotated with @Export!")
       None

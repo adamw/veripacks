@@ -2,6 +2,8 @@ package org.veripacks
 
 case class AccessDefinitions(exports: Map[Pkg, ExportDef], imports: Map[Pkg, ImportDef], requiresImport: Set[Pkg])
 
+case class SingleClassAccessDefinitions(exportDefs: Iterable[ExportDef], importDef: ImportDef, requiresImport: Boolean)
+
 case class ExportDef(classes: ExportClassesDef, pkgs: ExportPkgsDef) {
   def this(classes: ExportClassesDef) = this(classes, ExportPkgsUndefinedDef)
   def this(pkgs: ExportPkgsDef) = this(ExportAllClassesDef, pkgs)

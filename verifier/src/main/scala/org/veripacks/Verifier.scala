@@ -34,14 +34,14 @@ class Verifier extends Logging {
 
   private def readUsagesAndAccessDefinitions(pkgs: Iterable[Pkg], classes: Iterable[ClassName]) = {
     val classDependenciesReader = new ClassDependenciesReader()
-    val accessDefinitionsReader = new SingleClassAccessDefinitionsReader()
+    val singleClassAccessDefinitionsReader = new SingleClassAccessDefinitionsReader()
     val accessDefinitionsAccumulator = new AccessDefinitionsAccumulator()
 
     val classUsages = classes.flatMap { className =>
       val classReader = ClassReaderProducer.create(className)
 
-      val exportDefinitions = accessDefinitionsReader.readFor(className, classReader)
-      exportDefinitions.foreach(accessDefinitionsAccumulator.addExportDefinition(className.pkg, _))
+      val singleClassAccessDefinitions = singleClassAccessDefinitionsReader.readFor(className, classReader)
+      accessDefinitionsAccumulator.addSingleClassAccessDefinitions(className.pkg, singleClassAccessDefinitions)
 
       classDependenciesReader.read(className, classReader, pkgs)
     }

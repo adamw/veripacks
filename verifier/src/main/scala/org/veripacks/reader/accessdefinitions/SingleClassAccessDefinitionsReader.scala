@@ -9,7 +9,7 @@ import scala.collection.mutable
 class SingleClassAccessDefinitionsReader extends Logging {
   import SingleClassAccessDefinitionsReader._
 
-  def readFor(className: ClassName, classReader: ClassReader): Iterable[ExportDef] = {
+  def readFor(className: ClassName, classReader: ClassReader): SingleClassAccessDefinitions = {
     val classAnnotationsVisitor = new ClassAnnotationsVisitor()
     classReader.accept(classAnnotationsVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES)
 
@@ -17,7 +17,9 @@ class SingleClassAccessDefinitionsReader extends Logging {
       .annotationsWithValues
       .filter(awv => ExportAnnotations.contains(awv._1))
 
-    exportAnnotations.map(awv => resultFromAnnotation(className, awv._1, awv._2))
+    val exportDefs = exportAnnotations.map(awv => resultFromAnnotation(className, awv._1, awv._2))
+
+    SingleClassAccessDefinitions(exportDefs, ImportDef(Set()), false)
   }
 
   private def resultFromAnnotation(className: ClassName, annotation: Type, annotationValues: mutable.Map[String, Any]): ExportDef = {

@@ -15,9 +15,9 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
   it should "accumulate several export classes definitions in the same pacakge" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
-    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls2")))))
-    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls3"), ClassName(pkg1, "cls4")))))
+    addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
+    addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls2")))))
+    addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls3"), ClassName(pkg1, "cls4")))))
 
     val result = acc.build
 
@@ -33,8 +33,8 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
   it should "report an error if both export and export all definitions are used for a package" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
-    acc.addExportDefinition(pkg1, ExportDef.All)
+    addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
+    addExportDefinition(acc, pkg1, ExportDef.All)
 
     val result = acc.build
 
@@ -45,8 +45,8 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
   it should "accumulate export all definition" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addExportDefinition(pkg1, ExportDef.All)
-    acc.addExportDefinition(pkg2, ExportDef.All)
+    addExportDefinition(acc, pkg1, ExportDef.All)
+    addExportDefinition(acc, pkg2, ExportDef.All)
 
     val result = acc.build
 
@@ -62,10 +62,10 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
   it should "accumulate various definitions in one map" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
-    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls2")))))
-    acc.addExportDefinition(pkg2, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg2, "cls3"))), ExportAllPkgsDef))
-    acc.addExportDefinition(pkg3, ExportDef.All)
+    addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
+    addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls2")))))
+    addExportDefinition(acc, pkg2, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg2, "cls3"))), ExportAllPkgsDef))
+    addExportDefinition(acc, pkg3, ExportDef.All)
 
     val result = acc.build
 
@@ -82,8 +82,8 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
   it should "overwrite undefined with specific definitions" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addExportDefinition(pkg1, ExportDef.Undefined)
-    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
+    addExportDefinition(acc, pkg1, ExportDef.Undefined)
+    addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
 
     val result = acc.build
 
@@ -98,8 +98,8 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
   it should "not overwrite specific with undefined definitions" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
-    acc.addExportDefinition(pkg1, ExportDef.Undefined)
+    addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
+    addExportDefinition(acc, pkg1, ExportDef.Undefined)
 
     val result = acc.build
 
@@ -114,14 +114,14 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
   it should "accumulate both export classes and export subpackages" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
-    acc.addExportDefinition(pkg1, ExportDef(ExportSpecificPkgsDef(Set(pkg1sub1))))
+    addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
+    addExportDefinition(acc, pkg1, ExportDef(ExportSpecificPkgsDef(Set(pkg1sub1))))
 
-    acc.addExportDefinition(pkg2, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg2, "cls2")))))
-    acc.addExportDefinition(pkg2, ExportDef(ExportAllPkgsDef))
+    addExportDefinition(acc, pkg2, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg2, "cls2")))))
+    addExportDefinition(acc, pkg2, ExportDef(ExportAllPkgsDef))
 
-    acc.addExportDefinition(pkg3, ExportDef(ExportAllClassesDef))
-    acc.addExportDefinition(pkg3, ExportDef(ExportSpecificPkgsDef(Set(pkg3sub1))))
+    addExportDefinition(acc, pkg3, ExportDef(ExportAllClassesDef))
+    addExportDefinition(acc, pkg3, ExportDef(ExportSpecificPkgsDef(Set(pkg3sub1))))
 
     val result = acc.build
 
@@ -147,16 +147,20 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
   it should "report an error if both export all classes/subpackages and export all definitions are used for a package" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addExportDefinition(pkg1, ExportDef(ExportAllClassesDef))
-    acc.addExportDefinition(pkg1, ExportDef.All)
+    addExportDefinition(acc, pkg1, ExportDef(ExportAllClassesDef))
+    addExportDefinition(acc, pkg1, ExportDef.All)
 
-    acc.addExportDefinition(pkg2, ExportDef(ExportAllPkgsDef))
-    acc.addExportDefinition(pkg2, ExportDef.All)
+    addExportDefinition(acc, pkg2, ExportDef(ExportAllPkgsDef))
+    addExportDefinition(acc, pkg2, ExportDef.All)
 
     val result = acc.build
 
     // Then
     result.isLeft should be (true)
     result.left.get should have size (2)
+  }
+
+  private def addExportDefinition(acc: AccessDefinitionsAccumulator, pkg: Pkg, exportDef: ExportDef) {
+    acc.addSingleClassAccessDefinitions(pkg, SingleClassAccessDefinitions(List(exportDef), ImportDef(Set()), false))
   }
 }
