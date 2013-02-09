@@ -4,7 +4,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.veripacks._
 
-class AccessDefinitionsReaderTest extends FlatSpec with ShouldMatchers {
+class SingleClassAccessDefinitionsReaderTest extends FlatSpec with ShouldMatchers {
   val rootPkg = Pkg("org.veripacks.data.accessdefinitions")
   val pkgExportSubpkgs = rootPkg.child("pkg_export_subpkgs")
   val pkgExportSubpkgsAllClasses = rootPkg.child("pkg_export_subpkgs_all_classes")
@@ -23,7 +23,7 @@ class AccessDefinitionsReaderTest extends FlatSpec with ShouldMatchers {
 
   for ((className, expectedResult) <- readAccessDefinitionsTestData) {
     it should s"read access definitions in $className" in {
-      new AccessDefinitionsReader().readFor(className, ClassReaderProducer.create(className)).toSet should be (expectedResult)
+      new SingleClassAccessDefinitionsReader().readFor(className, ClassReaderProducer.create(className)).toSet should be (expectedResult)
     }
   }
 }

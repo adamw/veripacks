@@ -6,8 +6,8 @@ import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.mutable
 
 @Export
-class AccessDefinitionsReader extends Logging {
-  import AccessDefinitionsReader._
+class SingleClassAccessDefinitionsReader extends Logging {
+  import SingleClassAccessDefinitionsReader._
 
   def readFor(className: ClassName, classReader: ClassReader): Iterable[ExportDef] = {
     val classAnnotationsVisitor = new ClassAnnotationsVisitor()
@@ -50,7 +50,7 @@ class AccessDefinitionsReader extends Logging {
   }
 }
 
-object AccessDefinitionsReader {
+object SingleClassAccessDefinitionsReader {
   val ExportType = Type.getType(classOf[Export])
   val ExportAllType = Type.getType(classOf[ExportAll])
   val ExportAllClassesType = Type.getType(classOf[ExportAllClasses])

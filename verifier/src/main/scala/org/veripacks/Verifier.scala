@@ -2,7 +2,7 @@ package org.veripacks
 
 import org.veripacks.reader.ClassNamesLister
 import org.veripacks.reader.dependencies.ClassDependenciesReader
-import org.veripacks.reader.accessdefinitions.{AccessDefinitionsReader, AccessDefinitionsAccumulator}
+import org.veripacks.reader.accessdefinitions.{SingleClassAccessDefinitionsReader, AccessDefinitionsAccumulator}
 import com.typesafe.scalalogging.slf4j.Logging
 
 class Verifier extends Logging {
@@ -34,7 +34,7 @@ class Verifier extends Logging {
 
   private def readUsagesAndAccessDefinitions(pkgs: Iterable[Pkg], classes: Iterable[ClassName]) = {
     val classDependenciesReader = new ClassDependenciesReader()
-    val accessDefinitionsReader = new AccessDefinitionsReader()
+    val accessDefinitionsReader = new SingleClassAccessDefinitionsReader()
     val accessDefinitionsAccumulator = new AccessDefinitionsAccumulator()
 
     val classUsages = classes.flatMap { className =>
