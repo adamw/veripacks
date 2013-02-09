@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * Makes classes exported by packages, which require importing, accessible.
  *
- * Each imported package must have an @{@link RequireImport} annotation.
+ * Each imported package must have an @{@link RequiresImport} annotation.
  */
 public @interface Import {
     /**
