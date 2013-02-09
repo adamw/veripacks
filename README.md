@@ -134,6 +134,14 @@ verify that only packages that contain a `@Import("org.hibernate")` can access t
 
 This is similar to creating a separate build-module and adding the Hibernate dependency to it only.
 
+Sub- and child- packages
+------------------------
+
+Vocabulary:
+* subpackage - immediate child of a package. E.g. `com.foo.bar` is a subpackage of `com.foo`, but `com.foo.bar.baz`
+isn't.
+* child package - any child of a package. Following the example above, both packages are child packages of `com.foo`.
+
 Notes
 -----
 

@@ -7,6 +7,14 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
+/**
+ * Makes classes exported by packages, which require importing, accessible.
+ *
+ * Each imported package must have an @{@link RequireImport} annotation.
+ */
 public @interface Import {
+    /**
+     * @return Full names of packages to import.
+     */
     String[]    value()  default {};
 }

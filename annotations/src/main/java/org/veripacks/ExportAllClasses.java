@@ -7,5 +7,9 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
+/**
+ * Make all classes from this package accessible outside of this package (the classes are still visible in child
+ * packages).
+ */
 public @interface ExportAllClasses {
 }
