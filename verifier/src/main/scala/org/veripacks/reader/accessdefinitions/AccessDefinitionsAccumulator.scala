@@ -77,7 +77,7 @@ class AccessDefinitionsAccumulator extends Logging {
   def build: Either[List[AccessDefinitionError], AccessDefinitions] = {
     if (errors.size == 0) {
       logger.debug(s"Building access definitions; Size: ${defs.size}")
-      Right(AccessDefinitions(defs.toMap))
+      Right(AccessDefinitions(defs.toMap, Map(), Set()))
     } else {
       logger.debug(s"Building access definitions; Number of errors: ${errors.size}")
       Left(errors.toList)

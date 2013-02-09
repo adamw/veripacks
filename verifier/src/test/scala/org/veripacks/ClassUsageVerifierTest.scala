@@ -76,7 +76,7 @@ class ClassUsageVerifierTest extends FlatSpec with ShouldMatchers {
 
   for ((desc, accessDefinitions, clsUsed, clsUsedIn, expectedResult) <- testData) {
     it should desc in {
-      val result = new ClassUsageVerifier(AccessDefinitions(accessDefinitions)).isAllowed(ClassUsage(clsUsed, clsUsedIn,
+      val result = new ClassUsageVerifier(AccessDefinitions(accessDefinitions, Map(), Set())).isAllowed(ClassUsage(clsUsed, clsUsedIn,
         MethodBodyUsageDetail("", "", 0)))
 
       result should be (expectedResult)
