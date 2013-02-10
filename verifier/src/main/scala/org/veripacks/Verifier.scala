@@ -56,7 +56,7 @@ class Verifier extends Logging {
     if (forbiddenUsages.size == 0) {
       VerifyResultOk
     } else {
-      VerifyResultBrokConstraints(forbiddenUsages.toList)
+      VerifyResultBrokenConstraints(forbiddenUsages.toList)
     }
   }
 }
@@ -69,7 +69,7 @@ case object VerifyResultOk extends VerifyResult {
   def throwIfNotOk {}
 }
 
-case class VerifyResultBrokConstraints(brokenConstraints: List[ClassUsage]) extends VerifyResult {
+case class VerifyResultBrokenConstraints(brokenConstraints: List[ClassUsage]) extends VerifyResult {
   def throwIfNotOk {
     val desc = brokenConstraints.mkString("\n")
     throw new VerificationException(s"Broken constraints:\n$desc")

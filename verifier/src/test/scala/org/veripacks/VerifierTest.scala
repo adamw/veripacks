@@ -12,7 +12,7 @@ class VerifierTest extends FlatSpec with ShouldMatchers {
 
     // Then
     result match {
-      case VerifyResultBrokConstraints(brokenConstraints) => {
+      case VerifyResultBrokenConstraints(brokenConstraints) => {
         brokenConstraints.size should be > (0)
         brokenConstraints.map(_.cls).toSet should be (Set(from(classOf[Class112])))
         brokenConstraints.map(_.usedIn).toSet should be (Set(from(classOf[Class121])))
