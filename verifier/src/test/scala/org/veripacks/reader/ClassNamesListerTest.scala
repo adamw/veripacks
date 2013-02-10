@@ -10,7 +10,7 @@ class ClassNamesListerTest extends FlatSpec with ShouldMatchers {
     val result = new ClassNamesLister().list(Pkg("org.veripacks.data.accessdefinitions"))
 
     // Then
-    result should have size (7)
+    result should have size (10)
     result.foreach(_.name should not include ("."))
     result should contain (ClassName(Pkg("org.veripacks.data.accessdefinitions"), "Cls1NoAnnotation"))
     result should contain (ClassName(Pkg("org.veripacks.data.accessdefinitions.pkg_export_all"), "package-info"))

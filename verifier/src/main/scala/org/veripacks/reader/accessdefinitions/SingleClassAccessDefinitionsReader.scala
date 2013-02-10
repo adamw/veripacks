@@ -13,16 +13,17 @@ class SingleClassAccessDefinitionsReader extends Logging {
     val classAnnotationsVisitor = new ClassAnnotationsVisitor()
     classReader.accept(classAnnotationsVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES)
 
-    val exportAnnotations = classAnnotationsVisitor
-      .annotationsWithValues
-      .filter(awv => ExportAnnotations.contains(awv._1))
+    val annotations = classAnnotationsVisitor.annotationsWithValues
+    val exportAnnotations = annotations.filter(awv => ExportAnnotations.contains(awv._1))
 
-    val exportDefs = exportAnnotations.map(awv => resultFromAnnotation(className, awv._1, awv._2))
+    val exportDefs = exportAnnotations.map(awv => exportDefFromAnnotation(className, awv._1, awv._2))
+    val importDef = importDefFromAnnotations(annotations)
+    val requiresImport = annotations.contains(RequiresImportType)
 
-    SingleClassAccessDefinitions(exportDefs, ImportDef(Set()), false)
+    SingleClassAccessDefinitions(exportDefs, importDef, requiresImport)
   }
 
-  private def resultFromAnnotation(className: ClassName, annotation: Type, annotationValues: mutable.Map[String, Any]): ExportDef = {
+  private def exportDefFromAnnotation(className: ClassName, annotation: Type, annotationValues: mutable.Map[String, Any]): ExportDef = {
     annotation match {
       case ExportType => {
         logger.debug(s"Found an @Export annotation on ${className.fullName}.")
@@ -43,12 +44,30 @@ class SingleClassAccessDefinitionsReader extends Logging {
       case ExportSubpackagesType => {
         logger.debug(s"Found an @ExportSubpackages annotation on ${className.fullName}.")
         // We know that this annotation has a "value" value, and that it is an array
-        val valueValue = annotationValues("value").asInstanceOf[Iterable[String]]
+        val valueValue = valueAnnotationValueAsStrings(annotationValues)
         val subpkgs = valueValue.map(className.pkg.child(_)).toSet
         ExportDef(ExportSpecificPkgsDef(subpkgs))
       }
       case _ => ExportDef.Undefined
     }
+  }
+
+  private def importDefFromAnnotations(annotationsWithValues: mutable.Map[Type, mutable.HashMap[String, Any]]) = {
+    val importPkgs = annotationsWithValues.get(ImportType) match {
+      case Some(importValues) => {
+        // We know that this annotation has a "value" value, and that it is an array
+        val valueValue = valueAnnotationValueAsStrings(importValues)
+        val pkgs = valueValue.map(Pkg(_)).toSet
+        pkgs
+      }
+      case None => Set[Pkg]()
+    }
+
+    ImportDef(importPkgs)
+  }
+
+  private def valueAnnotationValueAsStrings(annotationValues: mutable.Map[String, Any])= {
+    annotationValues("value").asInstanceOf[Iterable[String]]
   }
 }
 
@@ -58,6 +77,8 @@ object SingleClassAccessDefinitionsReader {
   val ExportAllClassesType = Type.getType(classOf[ExportAllClasses])
   val ExportAllSubpackagesType = Type.getType(classOf[ExportAllSubpackages])
   val ExportSubpackagesType = Type.getType(classOf[ExportSubpackages])
+  val ImportType = Type.getType(classOf[Import])
+  val RequiresImportType = Type.getType(classOf[RequiresImport])
 
   val ExportAnnotations = Set(ExportType, ExportAllType, ExportAllClassesType, ExportAllSubpackagesType,
     ExportSubpackagesType)
