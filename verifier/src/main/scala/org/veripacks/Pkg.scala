@@ -3,20 +3,20 @@ package org.veripacks
 sealed trait Pkg {
   def name: String
   def child(childName: String): Pkg
-  def isSubpackageOf(other: Pkg): Boolean
+  def isChildPackageOf(other: Pkg): Boolean
   def parent: Option[Pkg]
 }
 
 case object RootPkg extends Pkg {
   val name = ""
   def child(childName: String) = DefaultPkg(childName)
-  def isSubpackageOf(other: Pkg) = other == RootPkg
+  def isChildPackageOf(other: Pkg) = other == RootPkg
   def parent = None
 }
 
 case class DefaultPkg(name: String) extends Pkg {
   def child(childName: String) = DefaultPkg(name + '.' + childName)
-  def isSubpackageOf(other: Pkg) = other match {
+  def isChildPackageOf(other: Pkg) = other match {
     case RootPkg => true
     case DefaultPkg(otherName) => name.startsWith(otherName)
   }

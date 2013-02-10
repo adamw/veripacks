@@ -15,7 +15,7 @@ class PkgTest extends FlatSpec with ShouldMatchers {
 
   for ((pkg1, pkg2, expectedResult) <- isSubpackageOfTestData) {
     it should s"return $expectedResult when calling $pkg1.isSubpckageOf($pkg2)" in {
-      pkg1.isSubpackageOf(pkg2) should be (expectedResult)
+      pkg1.isChildPackageOf(pkg2) should be (expectedResult)
     }
   }
 

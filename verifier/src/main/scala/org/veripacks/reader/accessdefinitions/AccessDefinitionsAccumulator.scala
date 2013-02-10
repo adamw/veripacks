@@ -121,7 +121,7 @@ class AccessDefinitionsAccumulator extends Logging {
       }
 
       def validate_importingNonParentPackages() {
-        if (pkg.isSubpackageOf(importedPkg)) {
+        if (pkg.isChildPackageOf(importedPkg)) {
           errors += AccessDefinitionError(s"Package ${pkg.name} imports package ${importedPkg.name}, but it is a parent package")
         }
       }

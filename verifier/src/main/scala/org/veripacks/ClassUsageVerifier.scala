@@ -42,7 +42,7 @@ class ClassUsageVerifier(accessDefinitions: AccessDefinitions) extends Logging {
   }
 
   private def isClassUsageAllowed(cls: ClassName, usedInPkg: Pkg) = {
-    if (usedInPkg.isSubpackageOf(cls.pkg)) {
+    if (usedInPkg.isChildPackageOf(cls.pkg)) {
       // Allow using classes from parent packages
       true
     } else {
@@ -59,7 +59,7 @@ class ClassUsageVerifier(accessDefinitions: AccessDefinitions) extends Logging {
 
   @tailrec
   private def isPkgUsageAllowed(parentPkg: Pkg, childPkg: Pkg, usedInPkg: Pkg): Boolean = {
-    if (usedInPkg.isSubpackageOf(parentPkg)) {
+    if (usedInPkg.isChildPackageOf(parentPkg)) {
       // Allow using packages from parent packages
       true
     } else {

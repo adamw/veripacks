@@ -9,7 +9,7 @@ import org.veripacks.{Pkg, Export, ClassName, ClassUsage}
 class ClassDependenciesReader extends Logging {
   def read(dependenciesOf: ClassName, classReader: ClassReader, scope: Iterable[Pkg]): Iterable[ClassUsage] = {
     def inScope(className: ClassName) = {
-      scope.exists(className.pkg.isSubpackageOf(_))
+      scope.exists(className.pkg.isChildPackageOf(_))
     }
 
     logger.debug(s"Reading dependencies of $dependenciesOf with scope $scope.")
