@@ -160,7 +160,47 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     result.left.get should have size (2)
   }
 
+  it should "accumulate import definitions" in {
+    // When
+    val acc = new AccessDefinitionsAccumulator
+    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg2, pkg3)), requiresImport = false))
+    acc.addSingleClassAccessDefinitions(pkg2, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg3sub1)), requiresImport = true))
+
+    val result = acc.build
+
+    // Then
+    result.isRight should be (true)
+    val defs = result.right.get
+
+    defs.imports(pkg1) should be (ImportDef(Set(pkg2, pkg3)))
+    defs.imports(pkg2) should be (ImportDef(Set(pkg3sub1)))
+
+    defs.requiresImport should be (Set(pkg2))
+  }
+
+  it should "accumulate both import and export definitions" in {
+    // When
+    val acc = new AccessDefinitionsAccumulator
+    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(List(ExportDef(ExportAllClassesDef)), ImportDef(Set(pkg2)), requiresImport = false))
+    acc.addSingleClassAccessDefinitions(pkg2, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg1)), requiresImport = false))
+    acc.addSingleClassAccessDefinitions(pkg2, SingleClassAccessDefinitions(List(ExportDef(ExportAllPkgsDef)), ImportDef(Set(pkg3)), requiresImport = true))
+
+    val result = acc.build
+
+    // Then
+    result.isRight should be (true)
+    val defs = result.right.get
+
+    defs.exports(pkg1) should be (ExportDef(ExportAllClassesDef))
+    defs.exports(pkg2) should be (ExportDef(ExportAllPkgsDef))
+
+    defs.imports(pkg1) should be (ImportDef(Set(pkg2)))
+    defs.imports(pkg2) should be (ImportDef(Set(pkg3, pkg1)))
+
+    defs.requiresImport should be (Set(pkg2))
+  }
+
   private def addExportDefinition(acc: AccessDefinitionsAccumulator, pkg: Pkg, exportDef: ExportDef) {
-    acc.addSingleClassAccessDefinitions(pkg, SingleClassAccessDefinitions(List(exportDef), ImportDef(Set()), false))
+    acc.addSingleClassAccessDefinitions(pkg, SingleClassAccessDefinitions(List(exportDef), ImportDef(Set()), requiresImport = false))
   }
 }

@@ -6,11 +6,15 @@ import com.typesafe.scalalogging.slf4j.Logging
 
 @Export
 class AccessDefinitionsAccumulator extends Logging {
-  private val defs = collection.mutable.HashMap[Pkg, ExportDef]()
+  private val exportDefs = collection.mutable.HashMap[Pkg, ExportDef]()
+  private val importDefs = collection.mutable.HashMap[Pkg, ImportDef]()
+  private val requiresImport = collection.mutable.HashSet[Pkg]()
   private val errors = ListBuffer[AccessDefinitionError]()
 
   def addSingleClassAccessDefinitions(pkg: Pkg, accessDefinitions: SingleClassAccessDefinitions) {
     accessDefinitions.exportDefs.foreach(addExportDefinition(pkg, _))
+    addImportDefinition(pkg, accessDefinitions.importDef)
+    if (accessDefinitions.requiresImport) requiresImport.add(pkg)
   }
 
   private def addExportDefinition(pkg: Pkg, exportDefinition: ExportDef) {
@@ -65,23 +69,33 @@ class AccessDefinitionsAccumulator extends Logging {
         mergedClasses <- mergeClasses(def1.classes, def2.classes)
         mergedPkgs <- mergePkgs(def1.pkgs, def2.pkgs)
       } {
-        defs(pkg) = ExportDef(mergedClasses, mergedPkgs)
+        exportDefs(pkg) = ExportDef(mergedClasses, mergedPkgs)
       }
     }
 
-    val current = defs.get(pkg)
+    val current = exportDefs.get(pkg)
     current match {
-      case None => defs(pkg) = exportDefinition
+      case None => exportDefs(pkg) = exportDefinition
       case Some(existing) => {
         merge(existing, exportDefinition)
       }
     }
   }
 
+  private def addImportDefinition(pkg: Pkg, importDef: ImportDef) {
+    def merge(importDef1: ImportDef, importDef2: ImportDef) = {
+      ImportDef(importDef1.pkgs ++ importDef2.pkgs)
+    }
+
+    if (importDef.pkgs.size > 0) {
+      importDefs.put(pkg, merge(importDefs.getOrElse(pkg, ImportDef(Set())), importDef))
+    }
+  }
+
   def build: Either[List[AccessDefinitionError], AccessDefinitions] = {
     if (errors.size == 0) {
-      logger.debug(s"Building access definitions; Size: ${defs.size}")
-      Right(AccessDefinitions(defs.toMap, Map(), Set()))
+      logger.debug(s"Building access definitions; Size: ${exportDefs.size}")
+      Right(AccessDefinitions(exportDefs.toMap, importDefs.toMap, requiresImport.toSet))
     } else {
       logger.debug(s"Building access definitions; Number of errors: ${errors.size}")
       Left(errors.toList)
