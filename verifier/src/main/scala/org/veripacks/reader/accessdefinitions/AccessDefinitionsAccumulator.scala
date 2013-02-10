@@ -19,22 +19,22 @@ class AccessDefinitionsAccumulator extends Logging {
 
   private def addExportDefinition(pkg: Pkg, exportDefinition: ExportDef) {
     def mixedExportWithExportAll() = {
-      errors += AccessDefinitionError(s"Package $pkg is annotated with @ExportAll and also contains classes annotated with @Export!")
+      errors += AccessDefinitionError(s"Package ${pkg.name} is annotated with @ExportAll and also contains classes annotated with @Export!")
       None
     }
 
     def mixedExportSubpackagesWithExportAll() = {
-      errors += AccessDefinitionError(s"Package $pkg is annotated with @ExportAll and with @ExportSubpackages!")
+      errors += AccessDefinitionError(s"Package ${pkg.name} is annotated with @ExportAll and with @ExportSubpackages!")
       None
     }
 
     def duplicatedExportAllClasses() = {
-      errors += AccessDefinitionError(s"Package $pkg is annotated with @ExportAll and with @ExportAllClasses!")
+      errors += AccessDefinitionError(s"Package ${pkg.name} is annotated with @ExportAll and with @ExportAllClasses!")
       None
     }
 
     def duplicatedExportAllPkgs() = {
-      errors += AccessDefinitionError(s"Package $pkg is annotated with @ExportAll and with @ExportAllSubpackages!")
+      errors += AccessDefinitionError(s"Package ${pkg.name} is annotated with @ExportAll and with @ExportAllSubpackages!")
       None
     }
 
@@ -93,6 +93,8 @@ class AccessDefinitionsAccumulator extends Logging {
   }
 
   def build: Either[List[AccessDefinitionError], AccessDefinitions] = {
+    validate()
+
     if (errors.size == 0) {
       logger.debug(s"Building access definitions; Exports: ${exportDefs.size}, imports: ${importDefs.size}, " +
         s"requires import: ${requiresImport.size}")
@@ -102,4 +104,32 @@ class AccessDefinitionsAccumulator extends Logging {
       Left(errors.toList)
     }
   }
+
+  private def validate() {
+    validateImports()
+  }
+
+  private def validateImports() {
+    for {
+      (pkg, importDef) <- importDefs
+      importedPkg <- importDef.pkgs
+    } {
+      def validate_importingOnlyPackagesWhichRequireImport() {
+        if (!requiresImport.contains(importedPkg)) {
+          errors += AccessDefinitionError(s"Package ${pkg.name} imports package ${importedPkg.name}, but it doesn't require importing")
+        }
+      }
+
+      def validate_importingNonParentPackages() {
+        if (pkg.isSubpackageOf(importedPkg)) {
+          errors += AccessDefinitionError(s"Package ${pkg.name} imports package ${importedPkg.name}, but it is a parent package")
+        }
+      }
+
+      validate_importingOnlyPackagesWhichRequireImport()
+      validate_importingNonParentPackages()
+    }
+  }
+
+
 }

@@ -3,8 +3,9 @@ package org.veripacks.reader.accessdefinitions
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.veripacks._
+import com.typesafe.scalalogging.slf4j.Logging
 
-class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
+class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with Logging {
   val pkg1 = Pkg("foo.bar.a")
   val pkg1sub1 = Pkg("foo.bar.a.sub1")
   val pkg1sub2 = Pkg("foo.bar.a.sub2")
@@ -22,7 +23,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     val result = acc.build
 
     // Then
-    result.isRight should be (true)
+    result should be ('right)
 
     val defs = result.right.get
     defs.exports should have size (1)
@@ -39,7 +40,9 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     val result = acc.build
 
     // Then
-    result.isLeft should be (true)
+    result should be ('left)
+
+    logger.info(s"Verification errors: ${result.left.get}")
   }
 
   it should "accumulate export all definition" in {
@@ -51,7 +54,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     val result = acc.build
 
     // Then
-    result.isRight should be (true)
+    result should be ('right)
 
     val defs = result.right.get
     defs.exports should have size (2)
@@ -70,7 +73,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     val result = acc.build
 
     // Then
-    result.isRight should be (true)
+    result should be ('right)
 
     val defs = result.right.get
     defs.exports should have size (3)
@@ -88,7 +91,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     val result = acc.build
 
     // Then
-    result.isRight should be (true)
+    result should be ('right)
 
     val defs = result.right.get
     defs.exports should have size (1)
@@ -104,7 +107,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     val result = acc.build
 
     // Then
-    result.isRight should be (true)
+    result should be ('right)
 
     val defs = result.right.get
     defs.exports should have size (1)
@@ -126,7 +129,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     val result = acc.build
 
     // Then
-    result.isRight should be (true)
+    result should be ('right)
 
     val defs = result.right.get
     defs.exports should have size (3)
@@ -156,7 +159,9 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     val result = acc.build
 
     // Then
-    result.isLeft should be (true)
+    result should be ('left)
+
+    logger.info(s"Verification errors: ${result.left.get}")
     result.left.get should have size (2)
   }
 
@@ -165,30 +170,33 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     val acc = new AccessDefinitionsAccumulator
     acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg2, pkg3)), requiresImport = false))
     acc.addSingleClassAccessDefinitions(pkg2, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg3sub1)), requiresImport = true))
+    acc.addSingleClassAccessDefinitions(pkg3, SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true))
+    acc.addSingleClassAccessDefinitions(pkg3sub1, SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true))
 
     val result = acc.build
 
     // Then
-    result.isRight should be (true)
+    result should be ('right)
     val defs = result.right.get
 
     defs.imports(pkg1) should be (ImportDef(Set(pkg2, pkg3)))
     defs.imports(pkg2) should be (ImportDef(Set(pkg3sub1)))
 
-    defs.requiresImport should be (Set(pkg2))
+    defs.requiresImport should be (Set(pkg2, pkg3, pkg3sub1))
   }
 
   it should "accumulate both import and export definitions" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(List(ExportDef(ExportAllClassesDef)), ImportDef(Set(pkg2)), requiresImport = false))
+    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(List(ExportDef(ExportAllClassesDef)), ImportDef(Set(pkg2)), requiresImport = true))
     acc.addSingleClassAccessDefinitions(pkg2, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg1)), requiresImport = false))
     acc.addSingleClassAccessDefinitions(pkg2, SingleClassAccessDefinitions(List(ExportDef(ExportAllPkgsDef)), ImportDef(Set(pkg3)), requiresImport = true))
+    acc.addSingleClassAccessDefinitions(pkg3, SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true))
 
     val result = acc.build
 
     // Then
-    result.isRight should be (true)
+    result should be ('right)
     val defs = result.right.get
 
     defs.exports(pkg1) should be (ExportDef(ExportAllClassesDef))
@@ -197,7 +205,36 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers {
     defs.imports(pkg1) should be (ImportDef(Set(pkg2)))
     defs.imports(pkg2) should be (ImportDef(Set(pkg3, pkg1)))
 
-    defs.requiresImport should be (Set(pkg2))
+    defs.requiresImport should be (Set(pkg1, pkg2, pkg3))
+  }
+
+  it should "report an error when importing a package which doesn't require import" in {
+    // When
+    val acc = new AccessDefinitionsAccumulator
+    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg2)), requiresImport = false))
+
+    val result = acc.build
+
+    // Then
+    result should be ('left)
+
+    logger.info(s"Verification errors: ${result.left.get}")
+    result.left.get should have size (1)
+  }
+
+  it should "report an error when importing a parent package" in {
+    // When
+    val acc = new AccessDefinitionsAccumulator
+    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true))
+    acc.addSingleClassAccessDefinitions(pkg1sub1, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg1)), requiresImport = false))
+
+    val result = acc.build
+
+    // Then
+    result should be ('left)
+
+    logger.info(s"Verification errors: ${result.left.get}")
+    result.left.get should have size (1)
   }
 
   private def addExportDefinition(acc: AccessDefinitionsAccumulator, pkg: Pkg, exportDef: ExportDef) {
