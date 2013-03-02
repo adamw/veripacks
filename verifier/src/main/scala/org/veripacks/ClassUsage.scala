@@ -1,8 +1,6 @@
 package org.veripacks
 
-case class ClassUsage(cls: ClassName, usedIn: ClassName, detail: ClassUsageDetail) {
-  override def toString = s"Class: ${cls.fullName} cannot be used in ${usedIn.fullName}. Class usage details: $detail."
-}
+case class ClassUsage(cls: ClassName, usedIn: ClassName, detail: ClassUsageDetail)
 
 sealed trait ClassUsageDetail {
   val sourceFileName: String

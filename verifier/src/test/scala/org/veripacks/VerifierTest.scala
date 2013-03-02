@@ -14,9 +14,9 @@ class VerifierTest extends FlatSpec with ShouldMatchers {
     result match {
       case VerifyResultBrokenConstraints(brokenConstraints) => {
         brokenConstraints.size should be > (0)
-        brokenConstraints.map(_.cls).toSet should be (Set(from(classOf[Class112])))
-        brokenConstraints.map(_.usedIn).toSet should be (Set(from(classOf[Class121])))
-        brokenConstraints.map(_.detail.sourceFileName).toSet should be (Set("Class121.scala"))
+        brokenConstraints.map(_._1.cls).toSet should be (Set(from(classOf[Class112])))
+        brokenConstraints.map(_._1.usedIn).toSet should be (Set(from(classOf[Class121])))
+        brokenConstraints.map(_._1.detail.sourceFileName).toSet should be (Set("Class121.scala"))
       }
       case _ => fail(s"Expected a broken constraints result, but got $result!")
     }

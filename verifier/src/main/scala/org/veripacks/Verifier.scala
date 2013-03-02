@@ -4,7 +4,8 @@ import org.veripacks.reader.ClassNamesLister
 import org.veripacks.reader.dependencies.ClassDependenciesReader
 import org.veripacks.reader.accessdefinitions.{SingleClassAccessDefinitionsReader, AccessDefinitionsAccumulator}
 import com.typesafe.scalalogging.slf4j.Logging
-import org.veripacks.classusageverifier.ClassUsageVerifier
+import org.veripacks.classusageverifier.{ClassUsageVerifierResult, ClassUsageVerifier}
+import org.veripacks.classusageverifier.ClassUsageVerifierResult.Allowed
 
 class Verifier extends Logging {
   def verify(rootPackage: String): VerifyResult = verify(List(rootPackage))
@@ -52,7 +53,10 @@ class Verifier extends Logging {
 
   private def doVerify(classUsages: Iterable[ClassUsage], accessDefinitions: AccessDefinitions) = {
     val classUsageVerifier = new ClassUsageVerifier(accessDefinitions)
-    val forbiddenUsages = classUsages.filter(!classUsageVerifier.isAllowed(_))
+    val forbiddenUsages = classUsages.flatMap(classUsage => {
+      val result = classUsageVerifier.verify(classUsage)
+      if (result == Allowed) None else Some((classUsage, result))
+    })
 
     if (forbiddenUsages.size == 0) {
       VerifyResultOk
@@ -70,9 +74,12 @@ case object VerifyResultOk extends VerifyResult {
   def throwIfNotOk {}
 }
 
-case class VerifyResultBrokenConstraints(brokenConstraints: List[ClassUsage]) extends VerifyResult {
+case class VerifyResultBrokenConstraints(brokenConstraints: List[(ClassUsage, ClassUsageVerifierResult)]) extends VerifyResult {
   def throwIfNotOk {
-    val desc = brokenConstraints.mkString("\n")
+    val desc = brokenConstraints.map { case (classUsage, classUsageVerifierResult) => {
+      s"Class: ${classUsage.cls.fullName} cannot be used in ${classUsage.usedIn.fullName} (${classUsage.detail}), " +
+        s"because of: $classUsageVerifierResult."
+    } }.mkString("\n")
     throw new VerificationException(s"Broken constraints:\n$desc")
   }
 }
