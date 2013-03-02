@@ -1,7 +1,8 @@
-package org.veripacks
+package org.veripacks.classusageverifier
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
+import org.veripacks._
 
 class ClassUsageVerifierTest extends FlatSpec with ShouldMatchers {
   val pkg1 = Pkg("foo.bar.p1")

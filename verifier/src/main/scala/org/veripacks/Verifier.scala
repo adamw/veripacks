@@ -4,6 +4,7 @@ import org.veripacks.reader.ClassNamesLister
 import org.veripacks.reader.dependencies.ClassDependenciesReader
 import org.veripacks.reader.accessdefinitions.{SingleClassAccessDefinitionsReader, AccessDefinitionsAccumulator}
 import com.typesafe.scalalogging.slf4j.Logging
+import org.veripacks.classusageverifier.ClassUsageVerifier
 
 class Verifier extends Logging {
   def verify(rootPackage: String): VerifyResult = verify(List(rootPackage))

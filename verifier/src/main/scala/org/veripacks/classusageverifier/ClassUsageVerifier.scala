@@ -1,7 +1,8 @@
-package org.veripacks
+package org.veripacks.classusageverifier
 
 import scala.annotation.tailrec
 import com.typesafe.scalalogging.slf4j.Logging
+import org.veripacks._
 
 class ClassUsageVerifier(accessDefinitions: AccessDefinitions) extends Logging {
   /**
