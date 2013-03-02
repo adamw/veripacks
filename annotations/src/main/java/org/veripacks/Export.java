@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 /**
- * Make the class accessible outside of this package (the class is still visible in child packages).
+ * Make the class accessible outside of this package (the class is always visible in child packages).
  */
 public @interface Export {
 }
