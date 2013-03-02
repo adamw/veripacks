@@ -67,15 +67,15 @@ class Verifier extends Logging {
 }
 
 sealed trait VerifyResult {
-  def throwIfNotOk
+  def throwIfNotOk()
 }
 
 case object VerifyResultOk extends VerifyResult {
-  def throwIfNotOk {}
+  def throwIfNotOk() {}
 }
 
 case class VerifyResultBrokenConstraints(brokenConstraints: List[(ClassUsage, ClassUsageVerifierResult)]) extends VerifyResult {
-  def throwIfNotOk {
+  def throwIfNotOk() {
     val desc = brokenConstraints.map { case (classUsage, classUsageVerifierResult) => {
       s"Class: ${classUsage.cls.fullName} cannot be used in ${classUsage.usedIn.fullName} (${classUsage.detail}), " +
         s"because of: $classUsageVerifierResult."
@@ -85,7 +85,7 @@ case class VerifyResultBrokenConstraints(brokenConstraints: List[(ClassUsage, Cl
 }
 
 case class VerifyResultAccessDefinitionError(accessDefinitionErrors: List[AccessDefinitionError]) extends VerifyResult {
-  def throwIfNotOk {
+  def throwIfNotOk() {
     val desc = accessDefinitionErrors.map(_.msg).mkString("\n")
     throw new VerificationException(s"Access definition errors:\n$desc")
   }
