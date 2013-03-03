@@ -159,6 +159,10 @@ the metadata upfront in an "architecture" file or keeping it in an external file
 
 Licensed under Apache2.
 
+#### Version 0.3 (? March 2013)
+
+* `@Import`, `@RequiresImport` annotations
+
 #### Version 0.2 (3 February 2013)
 
 * Support for exporting subpackages (`@ExportSubpackages`)
