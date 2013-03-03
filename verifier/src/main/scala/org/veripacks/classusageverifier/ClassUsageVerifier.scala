@@ -12,10 +12,13 @@ class ClassUsageVerifier(accessDefinitions: AccessDefinitions) extends Logging {
    *
    *     Pa1 <- Pa2 <- ... <- Pai (package Pai contains class A)
    * P <-
-   *     Pb1 <- Pb2 <- ... <- Pbj (package Paj contains class B)
+   *     Pb1 <- Pb2 <- ... <- Pbj (package Pbj contains class B)
    *
-   * For the usage to be allowed, class A must be exported up to P, as if a class is accessible in P, it is also
-   * accessible in all children, hence it is accessible in Pbj as well.
+   * For the usage to be allowed:
+   * - class A must be exported up to P, as if a class is accessible in P, it is also accessible in all children,
+   * hence it is accessible in Pbj as well.
+   * - if any of the packages Pb1 ... Pbj require import, the package must be imported by some of the packages
+   * (root package) ... Pai.
    *
    * Class A is exported up to P if:
    * - Pai exports class A
