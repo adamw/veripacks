@@ -46,8 +46,8 @@ More formally:
 * packages can always access classes from parent packages
 * within a package, all classes are visible
 * otherwise a class `A` can be used in `B` if:
-** it is exported, looking from the package that is the closest parent of both `A` and `B` (closest common root)
-** all packages between the closest common root and `B`'s package that require import, must be imported
+  * it is exported, looking from the package that is the closest parent of both `A` and `B` (closest common root)
+  * all packages between the closest common root and `B`'s package that require import, must be imported
 by `A`'s package or some parent package.
 
 Example
