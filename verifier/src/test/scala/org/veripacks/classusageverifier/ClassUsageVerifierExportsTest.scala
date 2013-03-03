@@ -4,7 +4,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 import org.veripacks._
 
-class ClassUsageVerifierTest extends FlatSpec with ShouldMatchers {
+class ClassUsageVerifierExportsTest extends FlatSpec with ShouldMatchers {
   import ClassUsageVerifierResult._
 
   val pkg1 = Pkg("foo.bar.p1")
@@ -77,9 +77,9 @@ class ClassUsageVerifierTest extends FlatSpec with ShouldMatchers {
       subSubPackageClassAndSubPackageExports2, cls1_in_pkg1_1_1, cls1_in_pkg1, PackageNotExported(pkg1_1_1))
   )
 
-  for ((desc, accessDefinitions, clsUsed, clsUsedIn, expectedResult) <- testData) {
+  for ((desc, exports, clsUsed, clsUsedIn, expectedResult) <- testData) {
     it should desc in {
-      val result = new ClassUsageVerifier(AccessDefinitions(accessDefinitions, Map(), Set())).verify(ClassUsage(clsUsed, clsUsedIn,
+      val result = new ClassUsageVerifier(AccessDefinitions(exports, Map(), Set())).verify(ClassUsage(clsUsed, clsUsedIn,
         MethodBodyUsageDetail("", "", 0)))
 
       result should be (expectedResult)
