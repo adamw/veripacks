@@ -5,7 +5,7 @@ sealed trait Pkg {
   def child(childName: String): Pkg
   def isChildPackageOf(other: Pkg): Boolean
   def parent: Option[Pkg]
-  def allPkgsUpToCommonRoot(other: Pkg): Set[Pkg]
+  def allPkgsUpToCommonRoot(other: Pkg, includeCommonRoot: Boolean): Set[Pkg]
 }
 
 case object RootPkg extends Pkg {
@@ -13,7 +13,7 @@ case object RootPkg extends Pkg {
   def child(childName: String) = DefaultPkg(childName)
   def isChildPackageOf(other: Pkg) = other == RootPkg
   def parent = None
-  def allPkgsUpToCommonRoot(other: Pkg) = Set(RootPkg)
+  def allPkgsUpToCommonRoot(other: Pkg, includeCommonRoot: Boolean) = if (includeCommonRoot) Set(RootPkg) else Set()
 }
 
 case class DefaultPkg(name: String) extends Pkg {
@@ -35,11 +35,11 @@ case class DefaultPkg(name: String) extends Pkg {
 
   def parent = Some(theParent)
 
-  def allPkgsUpToCommonRoot(other: Pkg) = {
+  def allPkgsUpToCommonRoot(other: Pkg, includeCommonRoot: Boolean) = {
     if (other.isChildPackageOf(this)) {
-      Set(this)
+      if (includeCommonRoot) Set(this) else Set()
     } else {
-      theParent.allPkgsUpToCommonRoot(other) + this
+      theParent.allPkgsUpToCommonRoot(other, includeCommonRoot) + this
     }
   }
 }

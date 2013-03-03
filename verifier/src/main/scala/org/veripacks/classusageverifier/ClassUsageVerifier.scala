@@ -29,7 +29,8 @@ class ClassUsageVerifier(accessDefinitions: AccessDefinitions) extends Logging {
   def verify(classUsage: ClassUsage): ClassUsageVerifierResult = {
     val result = doVerify(List(
       () => isClassUsageAllowedByExport(classUsage),
-      () => isPkgUsageAllowedByExport(classUsage)
+      () => isPkgUsageAllowedByExport(classUsage),
+      () => isPkgUsageAllowedByImport(classUsage)
     ))
 
     logger.debug(s"Result of verifying usage of ${classUsage.cls.fullName} in ${classUsage.usedIn.fullName} is: ${result}.")
@@ -109,6 +110,35 @@ class ClassUsageVerifier(accessDefinitions: AccessDefinitions) extends Logging {
         }
       } else {
         PackageNotExported(childPkg)
+      }
+    }
+  }
+
+  private def isPkgUsageAllowedByImport(classUsage: ClassUsage): ClassUsageVerifierResult = {
+    val toCheck = pkgsWhichMustBeImported(classUsage)
+    isPkgUsageAllowedByImport(classUsage.usedIn.pkg, toCheck)
+  }
+
+  private def pkgsWhichMustBeImported(classUsage: ClassUsage) = {
+    classUsage.cls.pkg
+      .allPkgsUpToCommonRoot(classUsage.usedIn.pkg, includeCommonRoot = false)
+      .intersect(accessDefinitions.requiresImport)
+  }
+
+  @tailrec
+  private def isPkgUsageAllowedByImport(pkg: Pkg, toCheck: Set[Pkg]): ClassUsageVerifierResult = {
+    if (toCheck.size == 0) {
+      Allowed
+    } else {
+      val importedPkgs = accessDefinitions.importedPkgsFor(pkg)
+      val newToCheck = toCheck -- importedPkgs
+
+      pkg.parent match {
+        case None => newToCheck.headOption match {
+          case None => Allowed
+          case Some(newToCheckPkg) => PackageNotImported(newToCheckPkg)
+        }
+        case Some(parent) => isPkgUsageAllowedByImport(parent, newToCheck)
       }
     }
   }

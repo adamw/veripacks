@@ -1,6 +1,8 @@
 package org.veripacks
 
-case class AccessDefinitions(exports: Map[Pkg, ExportDef], imports: Map[Pkg, ImportDef], requiresImport: Set[Pkg])
+case class AccessDefinitions(exports: Map[Pkg, ExportDef], imports: Map[Pkg, ImportDef], requiresImport: Set[Pkg]) {
+  def importedPkgsFor(pkg: Pkg) = imports.get(pkg).map(_.pkgs).getOrElse(Set())
+}
 
 case class SingleClassAccessDefinitions(exportDefs: Iterable[ExportDef], importDef: ImportDef, requiresImport: Boolean)
 

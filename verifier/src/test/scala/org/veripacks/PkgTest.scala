@@ -34,14 +34,15 @@ class PkgTest extends FlatSpec with ShouldMatchers {
   }
 
   val allPkgsUpToCommonRootTestData = List(
-    (Pkg("x.y.z"), RootPkg, Set(RootPkg, Pkg("x"), Pkg("x.y"), Pkg("x.y.z"))),
-    (Pkg("w.x.y.z"), Pkg("w.x"), Set(Pkg("w.x"), Pkg("w.x.y"), Pkg("w.x.y.z"))),
-    (Pkg("w.x.y.z"), Pkg("w.x.y1.z1"), Set(Pkg("w.x"), Pkg("w.x.y"), Pkg("w.x.y.z")))
+    (Pkg("x.y.z"), RootPkg, true, Set(RootPkg, Pkg("x"), Pkg("x.y"), Pkg("x.y.z"))),
+    (Pkg("w.x.y.z"), Pkg("w.x"), true, Set(Pkg("w.x"), Pkg("w.x.y"), Pkg("w.x.y.z"))),
+    (Pkg("w.x.y.z"), Pkg("w.x.y1.z1"), true, Set(Pkg("w.x"), Pkg("w.x.y"), Pkg("w.x.y.z"))),
+    (Pkg("w.x.y.z"), Pkg("w.x.y1.z1"), false, Set(Pkg("w.x.y"), Pkg("w.x.y.z")))
   )
 
-  for ((pkg, other, expectedResult) <- allPkgsUpToCommonRootTestData) {
-    it should s"properly get all pkgs up to the common root of $pkg with $other" in {
-      pkg.allPkgsUpToCommonRoot(other) should be (expectedResult)
+  for ((pkg, other, includeCommonRoot, expectedResult) <- allPkgsUpToCommonRootTestData) {
+    it should s"properly get all pkgs up to the common root of $pkg with $other, including common root: $includeCommonRoot" in {
+      pkg.allPkgsUpToCommonRoot(other, includeCommonRoot) should be (expectedResult)
     }
   }
 }
