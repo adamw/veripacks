@@ -29,6 +29,10 @@ annotation is an array of immediate subpackage names.
 * `@ExportAllClasses` and `@ExportAllSubpackages` - applicable to a package
 * `@ExportAll` - applicable to a package, specifies that all classes and subpackages should be exported. Has only
 documentational significance, as this is the default for all packages if no classes are explicitly exported.
+* `@RequiresImport` - specifies that exported classes from this package (and any child packages) can only be used, if
+the package is explicitly import using `@Import`.
+* `@Import` - imports a package annotated with `@RequiresImport`. Exported classes from the package may be used in
+the annotated package and any child packages.
 
 Using an export-all annotation and an export-specific annotation for same element type (class, subpackage) will result
 in an error.
@@ -41,8 +45,10 @@ Access rules should be pretty straightforward and work "as expected".
 More formally:
 * packages can always access classes from parent packages
 * within a package, all classes are visible
-* otherwise a class `A` can be used in `B` if it is exported, looking from the package that is the closest parent of
-both `A` and `B`
+* otherwise a class `A` can be used in `B` if:
+** it is exported, looking from the package that is the closest parent of both `A` and `B` (closest common root)
+** all packages between the closest common root and `B`'s package that require import, must be imported
+by `A`'s package or some parent package.
 
 Example
 -------
@@ -84,7 +90,7 @@ No build plugins or such are needed; just create a new test, with the following 
     public void runVeripacksTest() {
       new Verifier()
         .verify("foo.bar")
-        .throwIfNotOk
+        .throwIfNotOk()
     }
 
 This will throw an exception if there are some specification violations. You can also inspect the result of the
@@ -121,9 +127,7 @@ The project files are deployed to SoftwareMill's public Nexus repository:
 What's next?
 ------------
 
-* add support for importing:
-  * specify that a package can only be used if explicitly imported using a `@RequiresImport` annotation
-  * support an `@Import` annotation to specify classes from which packages can be used in a package
+* extend `@Import` to work with third-party packages (libraries)
 * allow to specify which classes/subpackages are exported in a separate file
 * IDE support
 
