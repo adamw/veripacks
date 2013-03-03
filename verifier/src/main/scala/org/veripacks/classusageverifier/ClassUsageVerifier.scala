@@ -27,23 +27,31 @@ class ClassUsageVerifier(accessDefinitions: AccessDefinitions) extends Logging {
    * - Pa1 exports package Pa2
    */
   def verify(classUsage: ClassUsage): ClassUsageVerifierResult = {
-    val classUsageAllowed = isClassUsageAllowed(classUsage)
-
-    val result = if (classUsageAllowed) {
-      isPkgUsageAllowed(classUsage)
-    } else {
-      ClassNotExported(classUsage.cls)
-    }
+    val result = doVerify(List(
+      () => isClassUsageAllowedByExport(classUsage),
+      () => isPkgUsageAllowedByExport(classUsage)
+    ))
 
     logger.debug(s"Result of verifying usage of ${classUsage.cls.fullName} in ${classUsage.usedIn.fullName} is: ${result}.")
 
     result
   }
 
-  private def isClassUsageAllowed(classUsage: ClassUsage) = {
+  @tailrec
+  private def doVerify(verifiers: List[() => ClassUsageVerifierResult]): ClassUsageVerifierResult = {
+    verifiers match {
+      case Nil => Allowed
+      case v :: other => {
+        val result = v()
+        if (result != Allowed) result else doVerify(other)
+      }
+    }
+  }
+
+  private def isClassUsageAllowedByExport(classUsage: ClassUsage) = {
     val cls = classUsage.cls
 
-    if (classUsage.usedIn.pkg.isChildPackageOf(cls.pkg)) {
+    val result = if (classUsage.usedIn.pkg.isChildPackageOf(cls.pkg)) {
       // Allow using classes from parent packages
       true
     } else {
@@ -56,22 +64,28 @@ class ClassUsageVerifier(accessDefinitions: AccessDefinitions) extends Logging {
         case _ => pkgToCheckExportDef.allClassesExported
       }
     }
+
+    if (result) {
+      Allowed
+    } else {
+      ClassNotExported(classUsage.cls)
+    }
   }
 
-  private def isPkgUsageAllowed(classUsage: ClassUsage): ClassUsageVerifierResult = {
+  private def isPkgUsageAllowedByExport(classUsage: ClassUsage): ClassUsageVerifierResult = {
     classUsage.cls.pkg.parent match {
       case None => {
         // Root package, all classes from the root package are accessible
         Allowed
       }
       case Some(parent) => {
-        isPkgUsageAllowed(parent, classUsage.cls.pkg, classUsage.usedIn.pkg)
+        isPkgUsageAllowedByExport(parent, classUsage.cls.pkg, classUsage.usedIn.pkg)
       }
     }
   }
 
   @tailrec
-  private def isPkgUsageAllowed(parentPkg: Pkg, childPkg: Pkg, usedInPkg: Pkg): ClassUsageVerifierResult = {
+  private def isPkgUsageAllowedByExport(parentPkg: Pkg, childPkg: Pkg, usedInPkg: Pkg): ClassUsageVerifierResult = {
     if (usedInPkg.isChildPackageOf(parentPkg)) {
       // Allow using packages from parent packages
       Allowed
@@ -91,7 +105,7 @@ class ClassUsageVerifier(accessDefinitions: AccessDefinitions) extends Logging {
             // package, so the first "if" would pass.
             PackageNotExported(childPkg)
           }
-          case Some(grandparentPkg) => isPkgUsageAllowed(grandparentPkg, parentPkg, usedInPkg)
+          case Some(grandparentPkg) => isPkgUsageAllowedByExport(grandparentPkg, parentPkg, usedInPkg)
         }
       } else {
         PackageNotExported(childPkg)
