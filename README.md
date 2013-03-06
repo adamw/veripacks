@@ -96,7 +96,7 @@ No build plugins or such are needed; just create a new test, with the following 
 This will throw an exception if there are some specification violations. You can also inspect the result of the
 `verify` call, which contains more detailed information (also included in the exception message).
 
-The project files are deployed to SoftwareMill's public Nexus repository:
+The project files are deployed to Sonatype's OSS public Nexus repository, which is synced to Maven Central:
 
     <!-- Only the annotations -->
     <dependency>
