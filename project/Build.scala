@@ -69,10 +69,7 @@ object VeripacksBuild extends Build {
     "veripacks-verifier",
     file("verifier"),
     settings = buildSettings ++ Seq(
-      libraryDependencies ++= testing ++ Seq(asm, scalaLogging),
-      // For some reason trying to run veripacks-verifier/compile:doc in SBT generates an error ... maybe that's a
-      // 2.10-RC issue. Disabling for now.
-      publishArtifact in (Compile, packageDoc) := false
+      libraryDependencies ++= testing ++ Seq(asm, scalaLogging)
     )
   ) dependsOn(annotations)
 
