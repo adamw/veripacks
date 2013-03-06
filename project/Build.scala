@@ -1,20 +1,39 @@
 import sbt._
-import Keys._
+import sbt.Keys._
+import scala.Some
 
 object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq (
     organization  := "org.veripacks",
     version       := "0.3-SNAPSHOT",
     scalaVersion  := "2.10.0",
-    scalacOptions += "",
-    licenses      := ("Apache2", new java.net.URL("http://www.apache.org/licenses/LICENSE-2.0.txt")) :: Nil,
-    publishTo     <<= (version) { version: String =>
-      val nexus = "https://nexus.softwaremill.com/content/repositories/"
-      if (version.trim.endsWith("SNAPSHOT"))  Some("softwaremill-public-snapshots" at nexus + "snapshots/")
-      else                                    Some("softwaremill-public-releases"  at nexus + "releases/")
+    // Sonatype OSS deployment
+    publishTo <<= version { (v: String) =>
+      val nexus = "https://oss.sonatype.org/"
+      if (v.trim.endsWith("SNAPSHOT"))
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases"  at nexus + "service/local/staging/deploy/maven2")
     },
     credentials   += Credentials(Path.userHome / ".ivy2" / ".credentials"),
-    publishMavenStyle := true
+    publishMavenStyle := true,
+    publishArtifact in Test := false,
+    pomIncludeRepository := { _ => false },
+    pomExtra := (
+      <scm>
+        <url>git@github.com:adamw/veripacks.git</url>
+        <connection>scm:git:git@github.com:adamw/veripacks.git</connection>
+      </scm>
+        <developers>
+          <developer>
+            <id>adamw</id>
+            <name>Adam Warski</name>
+            <url>http://www.warski.org</url>
+          </developer>
+        </developers>),
+    scalacOptions += "-unchecked",
+    homepage      := Some(new java.net.URL("http://www.veripacks.org")),
+    licenses      := ("Apache2", new java.net.URL("http://www.apache.org/licenses/LICENSE-2.0.txt")) :: Nil
   ) ++ net.virtualvoid.sbt.graph.Plugin.graphSettings
 }
 
