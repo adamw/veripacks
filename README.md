@@ -102,27 +102,16 @@ The project files are deployed to SoftwareMill's public Nexus repository:
     <dependency>
         <groupId>org.veripacks</groupId>
         <artifactId>veripacks-annotations_2.10</artifactId>
-        <version>0.2</version>
+        <version>0.3</version>
     </dependency>
 
     <!-- The verifier, has a dependency on the annotations -->
     <dependency>
         <groupId>org.veripacks</groupId>
         <artifactId>veripacks-verifier_2.10</artifactId>
-        <version>0.2</version>
+        <version>0.3</version>
         <scope>test</scope>
     </dependency>
-
-    <repository>
-        <id>SotwareMillPublicReleases</id>
-        <name>SotwareMill Public Releases</name>
-        <url>https://nexus.softwaremill.com/content/repositories/releases/</url>
-    </repository>
-    <repository>
-        <id>SotwareMillPublicSnapshots</id>
-        <name>SotwareMill Public Snapshots</name>
-        <url>https://nexus.softwaremill.com/content/repositories/snapshots/</url>
-    </repository>
 
 What's next?
 ------------
@@ -159,7 +148,7 @@ the metadata upfront in an "architecture" file or keeping it in an external file
 
 Licensed under Apache2.
 
-#### Version 0.3 (? March 2013)
+#### Version 0.3 (6 March 2013)
 
 * `@Import`, `@RequiresImport` annotations
 
