@@ -135,6 +135,14 @@ Vocabulary:
 isn't.
 * child package - any child of a package. Following the example above, both packages are child packages of `com.foo`.
 
+Blogs about Veripacks
+---------------------
+
+* [How to replace a build module with Veripacks](http://www.warski.org/blog/2013/03/how-to-replace-a-build-module-with-veripacks/)
+* [Veripacks 0.3: importing packages (transitively, of course)](http://www.warski.org/blog/2013/03/veripacks-0-3-importing-packages-transitively-of-course/)
+* [Veripacks 0.2: exporting subpackages](http://www.warski.org/blog/2013/02/veripacks-0-2-exporting-subpackages/)
+* [Veripacks 0.1 – Verify Package Specifications](http://www.warski.org/blog/2013/01/veripacks-0-1-verify-package-specifications/)
+
 Notes
 -----
 
