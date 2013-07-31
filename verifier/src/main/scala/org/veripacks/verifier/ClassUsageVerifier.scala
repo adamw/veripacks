@@ -1,4 +1,4 @@
-package org.veripacks.classusageverifier
+package org.veripacks.verifier
 
 import scala.annotation.tailrec
 import com.typesafe.scalalogging.slf4j.Logging

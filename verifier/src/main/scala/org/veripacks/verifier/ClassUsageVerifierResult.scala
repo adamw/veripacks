@@ -1,4 +1,4 @@
-package org.veripacks.classusageverifier
+package org.veripacks.verifier
 
 import org.veripacks.{Pkg, ClassName}
 

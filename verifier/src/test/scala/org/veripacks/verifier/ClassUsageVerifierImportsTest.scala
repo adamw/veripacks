@@ -1,4 +1,4 @@
-package org.veripacks.classusageverifier
+package org.veripacks.verifier
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
