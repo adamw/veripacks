@@ -1,13 +1,11 @@
 package org.veripacks
 
 import org.veripacks.reader.{MetadataReader, ClassNamesLister}
-import org.veripacks.reader.dependencies.ClassDependenciesReader
-import org.veripacks.reader.accessdefinitions.{SingleClassAccessDefinitionsReader, AccessDefinitionsAccumulator}
 import com.typesafe.scalalogging.slf4j.Logging
-import org.veripacks.classusageverifier.{ClassUsageVerifierResult, ClassUsageVerifier}
-import org.veripacks.classusageverifier.ClassUsageVerifierResult.Allowed
+import org.veripacks.verifier.{ClassUsageVerifierResult, ClassUsageVerifier}
+import org.veripacks.verifier.ClassUsageVerifierResult.Allowed
 
-class Verifier extends Logging {
+class Veripacks extends Logging {
   def verify(rootPackage: String): VerifyResult = verify(List(rootPackage))
 
   def verify(rootPackages: java.util.Collection[String]): VerifyResult = {
