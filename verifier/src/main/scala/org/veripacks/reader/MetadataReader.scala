@@ -6,6 +6,7 @@ import org.veripacks.reader.accessdefinitions.{AccessDefinitionsAccumulator, Sin
 import org.veripacks.AccessDefinitionError
 import org.veripacks.ClassUsage
 
+@Export
 class MetadataReader {
   def readUsagesAndAccessDefinitions(pkgs: Iterable[Pkg], classes: Iterable[ClassName]): (Iterable[ClassUsage], Either[List[AccessDefinitionError], AccessDefinitions]) = {
     val classDependenciesReader = new ClassDependenciesReader()
