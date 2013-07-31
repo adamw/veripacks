@@ -1,6 +1,6 @@
 package org.veripacks
 
-import org.veripacks.reader.ClassNamesLister
+import org.veripacks.reader.{MetadataReader, ClassNamesLister}
 import org.veripacks.reader.dependencies.ClassDependenciesReader
 import org.veripacks.reader.accessdefinitions.{SingleClassAccessDefinitionsReader, AccessDefinitionsAccumulator}
 import com.typesafe.scalalogging.slf4j.Logging
@@ -21,7 +21,8 @@ class Verifier extends Logging {
 
     logger.info(s"Checking ${pkgs.size} packages, containing ${classes.size} classes.")
 
-    val (classUsages, accessDefinitionsOrErrors) = readUsagesAndAccessDefinitions(pkgs, classes)
+    val metadataReader = new MetadataReader()
+    val (classUsages, accessDefinitionsOrErrors) = metadataReader.readUsagesAndAccessDefinitions(pkgs, classes)
 
     accessDefinitionsOrErrors match {
       case Left(errors) => VerifyResultAccessDefinitionError(errors)
@@ -31,24 +32,7 @@ class Verifier extends Logging {
 
   private def listClassesFromAllPackages(pkgs: Iterable[Pkg]) = {
     val classNamesLister = new ClassNamesLister()
-    pkgs.flatMap(classNamesLister.list(_))
-  }
-
-  private def readUsagesAndAccessDefinitions(pkgs: Iterable[Pkg], classes: Iterable[ClassName]) = {
-    val classDependenciesReader = new ClassDependenciesReader()
-    val singleClassAccessDefinitionsReader = new SingleClassAccessDefinitionsReader()
-    val accessDefinitionsAccumulator = new AccessDefinitionsAccumulator()
-
-    val classUsages = classes.flatMap { className =>
-      val classReader = ClassReaderProducer.create(className)
-
-      val singleClassAccessDefinitions = singleClassAccessDefinitionsReader.readFor(className, classReader)
-      accessDefinitionsAccumulator.addSingleClassAccessDefinitions(className.pkg, singleClassAccessDefinitions)
-
-      classDependenciesReader.read(className, classReader, pkgs)
-    }
-
-    (classUsages, accessDefinitionsAccumulator.build)
+    pkgs.flatMap(classNamesLister.list)
   }
 
   private def doVerify(classUsages: Iterable[ClassUsage], accessDefinitions: AccessDefinitions) = {
