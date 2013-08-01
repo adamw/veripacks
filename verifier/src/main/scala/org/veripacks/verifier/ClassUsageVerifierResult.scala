@@ -1,7 +1,8 @@
 package org.veripacks.verifier
 
-import org.veripacks.{Pkg, ClassName}
+import org.veripacks.{Export, Pkg, ClassName}
 
+@Export
 sealed trait ClassUsageVerifierResult
 
 object ClassUsageVerifierResult {
