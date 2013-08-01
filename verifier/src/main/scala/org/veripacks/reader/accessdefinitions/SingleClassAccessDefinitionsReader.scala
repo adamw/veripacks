@@ -20,7 +20,9 @@ class SingleClassAccessDefinitionsReader extends Logging {
     val importDef = importDefFromAnnotations(annotations)
     val requiresImport = annotations.contains(RequiresImportType)
 
-    SingleClassAccessDefinitions(exportDefs, importDef, requiresImport)
+    val verified = !annotations.contains(NotVerifiedType)
+
+    SingleClassAccessDefinitions(exportDefs, importDef, requiresImport, verified)
   }
 
   private def exportDefFromAnnotation(className: ClassName, annotation: Type, annotationValues: mutable.Map[String, Any]): ExportDef = {
@@ -79,6 +81,7 @@ object SingleClassAccessDefinitionsReader {
   val ExportSubpackagesType = Type.getType(classOf[ExportSubpackages])
   val ImportType = Type.getType(classOf[Import])
   val RequiresImportType = Type.getType(classOf[RequiresImport])
+  val NotVerifiedType = Type.getType(classOf[NotVerified])
 
   val ExportAnnotations = Set(ExportType, ExportAllType, ExportAllClassesType, ExportAllSubpackagesType,
     ExportSubpackagesType)

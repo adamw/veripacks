@@ -168,10 +168,10 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
   it should "accumulate import definitions" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg2, pkg3)), requiresImport = false))
-    acc.addSingleClassAccessDefinitions(pkg2, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg3sub1)), requiresImport = true))
-    acc.addSingleClassAccessDefinitions(pkg3, SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true))
-    acc.addSingleClassAccessDefinitions(pkg3sub1, SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true))
+    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg2, pkg3)), requiresImport = false, verified = true))
+    acc.addSingleClassAccessDefinitions(pkg2, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg3sub1)), requiresImport = true, verified = true))
+    acc.addSingleClassAccessDefinitions(pkg3, SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true, verified = true))
+    acc.addSingleClassAccessDefinitions(pkg3sub1, SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true, verified = true))
 
     val result = acc.build
 
@@ -188,10 +188,10 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
   it should "accumulate both import and export definitions" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(List(ExportDef(ExportAllClassesDef)), ImportDef(Set(pkg2)), requiresImport = true))
-    acc.addSingleClassAccessDefinitions(pkg2, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg1)), requiresImport = false))
-    acc.addSingleClassAccessDefinitions(pkg2, SingleClassAccessDefinitions(List(ExportDef(ExportAllPkgsDef)), ImportDef(Set(pkg3)), requiresImport = true))
-    acc.addSingleClassAccessDefinitions(pkg3, SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true))
+    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(List(ExportDef(ExportAllClassesDef)), ImportDef(Set(pkg2)), requiresImport = true, verified = true))
+    acc.addSingleClassAccessDefinitions(pkg2, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg1)), requiresImport = false, verified = true))
+    acc.addSingleClassAccessDefinitions(pkg2, SingleClassAccessDefinitions(List(ExportDef(ExportAllPkgsDef)), ImportDef(Set(pkg3)), requiresImport = true, verified = true))
+    acc.addSingleClassAccessDefinitions(pkg3, SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true, verified = true))
 
     val result = acc.build
 
@@ -211,7 +211,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
   it should "report an error when importing a package which doesn't require import" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg2)), requiresImport = false))
+    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg2)), requiresImport = false, verified = true))
 
     val result = acc.build
 
@@ -225,8 +225,8 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
   it should "report an error when importing a parent package" in {
     // When
     val acc = new AccessDefinitionsAccumulator
-    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true))
-    acc.addSingleClassAccessDefinitions(pkg1sub1, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg1)), requiresImport = false))
+    acc.addSingleClassAccessDefinitions(pkg1, SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true, verified = true))
+    acc.addSingleClassAccessDefinitions(pkg1sub1, SingleClassAccessDefinitions(Nil, ImportDef(Set(pkg1)), requiresImport = false, verified = true))
 
     val result = acc.build
 
@@ -238,6 +238,6 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
   }
 
   private def addExportDefinition(acc: AccessDefinitionsAccumulator, pkg: Pkg, exportDef: ExportDef) {
-    acc.addSingleClassAccessDefinitions(pkg, SingleClassAccessDefinitions(List(exportDef), ImportDef(Set()), requiresImport = false))
+    acc.addSingleClassAccessDefinitions(pkg, SingleClassAccessDefinitions(List(exportDef), ImportDef(Set()), requiresImport = false, verified = true))
   }
 }

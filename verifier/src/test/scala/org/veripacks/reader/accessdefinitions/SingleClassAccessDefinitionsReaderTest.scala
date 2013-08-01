@@ -29,16 +29,17 @@ class SingleClassAccessDefinitionsReaderTest extends FlatSpec with ShouldMatcher
       result.exportDefs.toSet should be (expectedExportDefsResult)
       result.importDef.pkgs should be (Set())
       result.requiresImport should be (false)
+      result.verified should be (true)
     }
   }
 
   val readImportAccessDefinitionsTestData = List(
     (ClassName(rootPkg.child("pkg_import"), "package-info"),
-      SingleClassAccessDefinitions(Nil, ImportDef(Set(Pkg("foo.bar.pkg1"), Pkg("foo.bar.pkg2"))), requiresImport = false)),
+      SingleClassAccessDefinitions(Nil, ImportDef(Set(Pkg("foo.bar.pkg1"), Pkg("foo.bar.pkg2"))), requiresImport = false, verified = true)),
     (ClassName(rootPkg.child("pkg_requires_import"), "package-info"),
-      SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true)),
+      SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true, verified = true)),
     (ClassName(pkgMixed, "package-info"), SingleClassAccessDefinitions(Set(ExportDef(ExportSpecificPkgsDef(Set(pkgMixed.child("sub1"))))),
-      ImportDef(Set(Pkg("foo.bar"))), requiresImport = true))
+      ImportDef(Set(Pkg("foo.bar"))), requiresImport = true, verified = true))
   )
 
   for ((className, expectedResult) <- readImportAccessDefinitionsTestData) {
@@ -48,6 +49,18 @@ class SingleClassAccessDefinitionsReaderTest extends FlatSpec with ShouldMatcher
       result.exportDefs.toSet should be (expectedResult.exportDefs.toSet)
       result.importDef should be (expectedResult.importDef)
       result.requiresImport should be (expectedResult.requiresImport)
+      result.verified should be (expectedResult.verified)
     }
+  }
+
+  it should s"read not verified annotation" in {
+    // Given
+    val className = ClassName(rootPkg, "Cls3NotVerifiedAnnotation")
+
+    // When
+    val result = new SingleClassAccessDefinitionsReader().readFor(className, ClassReaderProducer.create(className))
+
+    // Then
+    result.verified should be (false)
   }
 }
