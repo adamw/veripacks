@@ -4,7 +4,7 @@ import org.veripacks.reader.{MetadataReader, ClassNamesLister}
 import com.typesafe.scalalogging.slf4j.Logging
 import org.veripacks.verifier.Verifier
 
-class Veripacks extends Logging {
+class Veripacks(metadataReader: MetadataReader, verifier: Verifier) extends Logging {
   def verify(rootPackage: String): VerifyResult = verify(List(rootPackage))
 
   def verify(rootPackages: java.util.Collection[String]): VerifyResult = {
@@ -18,10 +18,7 @@ class Veripacks extends Logging {
 
     logger.info(s"Checking ${pkgs.size} packages, containing ${classes.size} classes.")
 
-    val metadataReader = new MetadataReader()
     val (classUsages, accessDefinitionsOrErrors) = metadataReader.readUsagesAndAccessDefinitions(pkgs, classes)
-
-    val verifier = new Verifier()
 
     accessDefinitionsOrErrors match {
       case Left(errors) => VerifyResultAccessDefinitionError(errors)

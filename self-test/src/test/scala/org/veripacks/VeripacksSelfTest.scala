@@ -5,6 +5,6 @@ import org.scalatest.FlatSpec
 
 class VeripacksSelfTest extends FlatSpec with ShouldMatchers {
   it should "not report and contrainst violations in the veripacks code" in {
-    new Veripacks().verify("org.veripacks").throwIfNotOk()
+    VeripacksBuilder.build.verify("org.veripacks").throwIfNotOk()
   }
 }

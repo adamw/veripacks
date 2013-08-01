@@ -10,7 +10,7 @@ import org.veripacks.data.t3.p31.Class311
 class VeripacksTest extends FlatSpec with ShouldMatchers {
   it should "report export errors" in {
     // When
-    val result = new Veripacks().verify(List("org.veripacks.data.t1"))
+    val result = VeripacksBuilder.build.verify(List("org.veripacks.data.t1"))
 
     // Then
     result match {
@@ -26,7 +26,7 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
 
   it should "report no export errors" in {
     // When
-    val result = new Veripacks().verify(List("org.veripacks.data.t2"))
+    val result = VeripacksBuilder.build.verify(List("org.veripacks.data.t2"))
 
     // Then
     result should be (VerifyResultOk)
@@ -34,7 +34,7 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
 
   it should "report import errors" in {
     // When
-    val result = new Veripacks().verify(List("org.veripacks.data.t3"))
+    val result = VeripacksBuilder.build.verify(List("org.veripacks.data.t3"))
 
     // Then
     result match {
@@ -50,7 +50,7 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
 
   it should "report no import errors" in {
     // When
-    val result = new Veripacks().verify(List("org.veripacks.data.t4"))
+    val result = VeripacksBuilder.build.verify(List("org.veripacks.data.t4"))
 
     // Then
     result should be (VerifyResultOk)

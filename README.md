@@ -88,7 +88,7 @@ in Java-only projects.
 No build plugins or such are needed; just create a new test, with the following body:
 
     public void runVeripacksTest() {
-      new Verifier()
+      VeripacksBuilder.build
         .verify("foo.bar")
         .throwIfNotOk()
     }

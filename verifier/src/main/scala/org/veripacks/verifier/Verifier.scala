@@ -8,9 +8,9 @@ import scala.Some
 import org.veripacks.AccessDefinitions
 
 @Export
-class Verifier {
+class Verifier(createClassUsageVerifier: AccessDefinitions => ClassUsageVerifier) {
   def doVerify(classUsages: Iterable[ClassUsage], accessDefinitions: AccessDefinitions) = {
-    val classUsageVerifier = new ClassUsageVerifier(accessDefinitions)
+    val classUsageVerifier = createClassUsageVerifier(accessDefinitions)
     val forbiddenUsages = classUsages.flatMap(classUsage => {
       val result = classUsageVerifier.verify(classUsage)
       if (result == Allowed) None else Some((classUsage, result))
