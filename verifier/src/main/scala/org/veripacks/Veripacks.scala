@@ -18,16 +18,22 @@ class Veripacks(metadataReader: MetadataReader, verifier: Verifier) extends Logg
 
     logger.info(s"Checking ${pkgs.size} packages, containing ${classes.size} classes.")
 
-    val (classUsages, accessDefinitionsOrErrors) = metadataReader.readUsagesAndAccessDefinitions(pkgs, classes)
+    val metadata = metadataReader.readUsagesAndAccessDefinitions(pkgs, classes)
 
-    accessDefinitionsOrErrors match {
+    metadata.accessDefinitionsOrErrors match {
       case Left(errors) => VerifyResultAccessDefinitionError(errors)
-      case Right(accessDefinitions) => verifier.doVerify(classUsages, accessDefinitions)
+      case Right(accessDefinitions) => verifier.doVerify(
+        filterClassUsages(metadata.classUsages, metadata.notVerified),
+        accessDefinitions)
     }
   }
 
   private def listClassesFromAllPackages(pkgs: Iterable[Pkg]) = {
     val classNamesLister = new ClassNamesLister()
     pkgs.flatMap(classNamesLister.list)
+  }
+
+  private def filterClassUsages(classUsage: Iterable[ClassUsage], notVerified: Set[ClassName]) = {
+    classUsage.filter(cu => !notVerified.contains(cu.usedIn))
   }
 }
