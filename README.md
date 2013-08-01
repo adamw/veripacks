@@ -115,6 +115,26 @@ The project files are deployed to Sonatype's OSS public Nexus repository, which 
         <scope>test</scope>
     </dependency>
 
+Specifying a custom metadata reader
+-----------------------------------
+
+Sometimes it may be desirable to specify a custom metadata reader. For example, if the package naming convention in a
+project is `com.<company>.<project>.<main module>.<submodule>`, instead of adding an `@RequiresImport` annotation to
+each main-module package, it would be better to automatically require import for such packages.
+
+We may achieve this by extending the `CustomAccessDefinitionsReader` trait and providing it when building the
+`Veripacks` instance:
+
+````scala
+VeripacksBuilder
+  .withCustomAccessDefinitionReader(new CustomAccessDefinitionsReader {
+    override def isRequiresImport(pkg: Pkg) = pkg.name.split(".").length == 4
+  })
+  .build
+  .verify(List("com.<company>.<project>"))
+  .throwIfNotOk()
+````
+
 What's next?
 ------------
 
