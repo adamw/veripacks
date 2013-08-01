@@ -56,5 +56,13 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
     result should be (VerifyResultOk)
   }
 
+  it should "report no errors when verification is skipped" in {
+    // When
+    val result = VeripacksBuilder.build.verify(List("org.veripacks.data.t5"))
+
+    // Then
+    result should be (VerifyResultOk)
+  }
+
   private def from(cls: Class[_]) = new ClassName(Pkg(cls.getPackage.getName), cls.getSimpleName)
 }
