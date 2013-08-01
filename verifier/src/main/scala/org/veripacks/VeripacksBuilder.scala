@@ -5,6 +5,7 @@ import org.veripacks.reader.accessdefinitions.{AccessDefinitionsAccumulator, Sin
 import org.veripacks.reader.MetadataReader
 import org.veripacks.verifier.{Verifier, ClassUsageVerifier}
 
+@NotVerified
 class VeripacksBuilder {
   lazy val classDependenciesReader = new ClassDependenciesReader()
   lazy val singleClassAccessDefinitionsReader = new SingleClassAccessDefinitionsReader()
