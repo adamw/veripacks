@@ -34,6 +34,10 @@ class Veripacks(metadataReader: MetadataReader, verifier: Verifier) extends Logg
   }
 
   private def filterClassUsages(classUsage: Iterable[ClassUsage], notVerified: Set[ClassName]) = {
-    classUsage.filter(cu => !notVerified.contains(cu.usedIn))
+    classUsage.filter { cu =>
+      val classFullName = cu.usedIn.fullName
+      // We want to skip any generated child classes of classes that are not verified. E.g. Verifier$$anonfun$etc.
+      !notVerified.exists(nv => classFullName.startsWith(nv.fullName))
+    }
   }
 }
