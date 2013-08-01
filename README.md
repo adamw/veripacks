@@ -33,6 +33,8 @@ documentational significance, as this is the default for all packages if no clas
 the package is explicitly import using `@Import`.
 * `@Import` - imports a package annotated with `@RequiresImport`. Exported classes from the package may be used in
 the annotated package and any child packages.
+* `@NotVerified` - classes annotated with that annotation won't be verified by Veripacks. Useful e.g. for classes which
+wire objects from various packages together ("manual DI").
 
 Using an export-all annotation and an export-specific annotation for same element type (class, subpackage) will result
 in an error.
@@ -155,6 +157,11 @@ the metadata upfront in an "architecture" file or keeping it in an external file
 * packages are treated in a hierarchical manner, with proper parent-child relationships
 
 Licensed under Apache2.
+
+#### Version 0.4 (?? August 2013)
+
+* `@NotVerified` annotation
+* wireable code, overridable components
 
 #### Version 0.3 (6 March 2013)
 
