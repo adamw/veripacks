@@ -13,12 +13,20 @@ class VeripacksBuilder {
 
   lazy val metadataReader = new MetadataReader(classDependenciesReader,
     singleClassAccessDefinitionsReader,
-    accessDefinitionsAccumulator)
+    accessDefinitionsAccumulator,
+    customAccessDefinitionsReader)
 
   def createClassUsageVerifier(accessDefinitions: AccessDefinitions) = new ClassUsageVerifier(accessDefinitions)
   lazy val verifier = new Verifier(createClassUsageVerifier)
 
   lazy val veripacks = new Veripacks(metadataReader, verifier)
+
+  var customAccessDefinitionsReader: CustomAccessDefinitionsReader = NoOpCustomAccessDefinitionsReader
+
+  def withCustomAccessDefinitionReader(newCustomAccessDefinitionsReader: CustomAccessDefinitionsReader) = {
+    customAccessDefinitionsReader = newCustomAccessDefinitionsReader
+    this
+  }
 
   def build = veripacks
 }

@@ -7,17 +7,23 @@ import org.veripacks.reader.accessdefinitions.{AccessDefinitionsAccumulator, Cla
 @Export
 class MetadataReader(classDependenciesReader: ClassDependenciesReader,
                      singleClassAccessDefinitionsReader: ClassAccessDefinitionsReader,
-                     accessDefinitionsAccumulator: AccessDefinitionsAccumulator) {
+                     accessDefinitionsAccumulator: AccessDefinitionsAccumulator,
+                     customAccessDefinitionsReader: CustomAccessDefinitionsReader) {
   def readUsagesAndAccessDefinitions(pkgs: Iterable[Pkg], classes: Iterable[ClassName]): Metadata = {
     val notVerified = scala.collection.mutable.HashSet[ClassName]()
 
     val classUsages = classes.flatMap { className =>
       val classReader = ClassReaderProducer.create(className)
 
+      // Default
       val singleClassAccessDefinitions = singleClassAccessDefinitionsReader.readFor(className, classReader)
       accessDefinitionsAccumulator.addSingleClassAccessDefinitions(className.pkg, singleClassAccessDefinitions)
 
-      if (!singleClassAccessDefinitions.verified) {
+      // Custom
+      val customClassAccessDefinitions = customAccessDefinitionsReader.forClass(className)
+      accessDefinitionsAccumulator.addSingleClassAccessDefinitions(className.pkg, customClassAccessDefinitions)
+
+      if (!singleClassAccessDefinitions.verified || !customClassAccessDefinitions.verified) {
         notVerified += className
       }
 
