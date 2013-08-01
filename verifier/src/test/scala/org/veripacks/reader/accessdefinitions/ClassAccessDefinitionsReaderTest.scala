@@ -3,6 +3,7 @@ package org.veripacks.reader.accessdefinitions
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.veripacks._
+import org.veripacks.reader.ClassReaderProducer
 
 class ClassAccessDefinitionsReaderTest extends FlatSpec with ShouldMatchers {
   val rootPkg = Pkg("org.veripacks.data.accessdefinitions")

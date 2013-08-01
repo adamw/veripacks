@@ -2,7 +2,8 @@ package org.veripacks.reader.dependencies
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
-import org.veripacks.{ClassReaderProducer, Pkg, ClassName}
+import org.veripacks.{Pkg, ClassName}
+import org.veripacks.reader.ClassReaderProducer
 
 class ClassDependenciesReaderTest extends FlatSpec with ShouldMatchers {
   val rootPkg = Pkg("org.veripacks.data.dependenciesreader")

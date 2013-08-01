@@ -1,6 +1,7 @@
-package org.veripacks
+package org.veripacks.reader
 
 import org.objectweb.asm.ClassReader
+import org.veripacks.ClassName
 
 object ClassReaderProducer {
   def create(className: ClassName) = {
