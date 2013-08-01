@@ -4,7 +4,7 @@ case class AccessDefinitions(exports: Map[Pkg, ExportDef], imports: Map[Pkg, Imp
   def importedPkgsFor(pkg: Pkg) = imports.get(pkg).map(_.pkgs).getOrElse(Set())
 }
 
-case class SingleClassAccessDefinitions(exportDefs: Iterable[ExportDef], importDef: ImportDef,
+case class ClassAccessDefinitions(exportDefs: Iterable[ExportDef], importDef: ImportDef,
                                         requiresImport: Boolean, verified: Boolean)
 
 case class ExportDef(classes: ExportClassesDef, pkgs: ExportPkgsDef) {

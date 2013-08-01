@@ -6,10 +6,10 @@ import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.mutable
 
 @Export
-class SingleClassAccessDefinitionsReader extends Logging {
-  import SingleClassAccessDefinitionsReader._
+class ClassAccessDefinitionsReader extends Logging {
+  import ClassAccessDefinitionsReader._
 
-  def readFor(className: ClassName, classReader: ClassReader): SingleClassAccessDefinitions = {
+  def readFor(className: ClassName, classReader: ClassReader): ClassAccessDefinitions = {
     val classAnnotationsVisitor = new ClassAnnotationsVisitor()
     classReader.accept(classAnnotationsVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES)
 
@@ -22,7 +22,7 @@ class SingleClassAccessDefinitionsReader extends Logging {
 
     val verified = !annotations.contains(NotVerifiedType)
 
-    SingleClassAccessDefinitions(exportDefs, importDef, requiresImport, verified)
+    ClassAccessDefinitions(exportDefs, importDef, requiresImport, verified)
   }
 
   private def exportDefFromAnnotation(className: ClassName, annotation: Type, annotationValues: mutable.Map[String, Any]): ExportDef = {
@@ -73,7 +73,7 @@ class SingleClassAccessDefinitionsReader extends Logging {
   }
 }
 
-object SingleClassAccessDefinitionsReader {
+object ClassAccessDefinitionsReader {
   val ExportType = Type.getType(classOf[Export])
   val ExportAllType = Type.getType(classOf[ExportAll])
   val ExportAllClassesType = Type.getType(classOf[ExportAllClasses])

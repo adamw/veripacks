@@ -11,7 +11,7 @@ class AccessDefinitionsAccumulator extends Logging {
   private val requiresImport = collection.mutable.HashSet[Pkg]()
   private val errors = ListBuffer[AccessDefinitionError]()
 
-  def addSingleClassAccessDefinitions(pkg: Pkg, accessDefinitions: SingleClassAccessDefinitions) {
+  def addSingleClassAccessDefinitions(pkg: Pkg, accessDefinitions: ClassAccessDefinitions) {
     accessDefinitions.exportDefs.foreach(addExportDefinition(pkg, _))
     addImportDefinition(pkg, accessDefinitions.importDef)
     if (accessDefinitions.requiresImport) requiresImport.add(pkg)

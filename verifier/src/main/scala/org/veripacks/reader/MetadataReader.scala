@@ -2,11 +2,11 @@ package org.veripacks.reader
 
 import org.veripacks._
 import org.veripacks.reader.dependencies.ClassDependenciesReader
-import org.veripacks.reader.accessdefinitions.{AccessDefinitionsAccumulator, SingleClassAccessDefinitionsReader}
+import org.veripacks.reader.accessdefinitions.{AccessDefinitionsAccumulator, ClassAccessDefinitionsReader}
 
 @Export
 class MetadataReader(classDependenciesReader: ClassDependenciesReader,
-                     singleClassAccessDefinitionsReader: SingleClassAccessDefinitionsReader,
+                     singleClassAccessDefinitionsReader: ClassAccessDefinitionsReader,
                      accessDefinitionsAccumulator: AccessDefinitionsAccumulator) {
   def readUsagesAndAccessDefinitions(pkgs: Iterable[Pkg], classes: Iterable[ClassName]): Metadata = {
     val notVerified = scala.collection.mutable.HashSet[ClassName]()

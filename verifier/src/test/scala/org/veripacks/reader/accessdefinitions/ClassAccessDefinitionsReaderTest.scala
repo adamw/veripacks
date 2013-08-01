@@ -4,7 +4,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.veripacks._
 
-class SingleClassAccessDefinitionsReaderTest extends FlatSpec with ShouldMatchers {
+class ClassAccessDefinitionsReaderTest extends FlatSpec with ShouldMatchers {
   val rootPkg = Pkg("org.veripacks.data.accessdefinitions")
   val pkgExportSubpkgs = rootPkg.child("pkg_export_subpkgs")
   val pkgExportSubpkgsAllClasses = rootPkg.child("pkg_export_subpkgs_all_classes")
@@ -24,7 +24,7 @@ class SingleClassAccessDefinitionsReaderTest extends FlatSpec with ShouldMatcher
 
   for ((className, expectedExportDefsResult) <- readExportAccessDefinitionsTestData) {
     it should s"read export access definitions in $className" in {
-      val result = new SingleClassAccessDefinitionsReader().readFor(className, ClassReaderProducer.create(className))
+      val result = new ClassAccessDefinitionsReader().readFor(className, ClassReaderProducer.create(className))
 
       result.exportDefs.toSet should be (expectedExportDefsResult)
       result.importDef.pkgs should be (Set())
@@ -35,16 +35,16 @@ class SingleClassAccessDefinitionsReaderTest extends FlatSpec with ShouldMatcher
 
   val readImportAccessDefinitionsTestData = List(
     (ClassName(rootPkg.child("pkg_import"), "package-info"),
-      SingleClassAccessDefinitions(Nil, ImportDef(Set(Pkg("foo.bar.pkg1"), Pkg("foo.bar.pkg2"))), requiresImport = false, verified = true)),
+      ClassAccessDefinitions(Nil, ImportDef(Set(Pkg("foo.bar.pkg1"), Pkg("foo.bar.pkg2"))), requiresImport = false, verified = true)),
     (ClassName(rootPkg.child("pkg_requires_import"), "package-info"),
-      SingleClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true, verified = true)),
-    (ClassName(pkgMixed, "package-info"), SingleClassAccessDefinitions(Set(ExportDef(ExportSpecificPkgsDef(Set(pkgMixed.child("sub1"))))),
+      ClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true, verified = true)),
+    (ClassName(pkgMixed, "package-info"), ClassAccessDefinitions(Set(ExportDef(ExportSpecificPkgsDef(Set(pkgMixed.child("sub1"))))),
       ImportDef(Set(Pkg("foo.bar"))), requiresImport = true, verified = true))
   )
 
   for ((className, expectedResult) <- readImportAccessDefinitionsTestData) {
     it should s"read import access definitions in $className" in {
-      val result = new SingleClassAccessDefinitionsReader().readFor(className, ClassReaderProducer.create(className))
+      val result = new ClassAccessDefinitionsReader().readFor(className, ClassReaderProducer.create(className))
 
       result.exportDefs.toSet should be (expectedResult.exportDefs.toSet)
       result.importDef should be (expectedResult.importDef)
@@ -58,7 +58,7 @@ class SingleClassAccessDefinitionsReaderTest extends FlatSpec with ShouldMatcher
     val className = ClassName(rootPkg, "Cls3NotVerifiedAnnotation")
 
     // When
-    val result = new SingleClassAccessDefinitionsReader().readFor(className, ClassReaderProducer.create(className))
+    val result = new ClassAccessDefinitionsReader().readFor(className, ClassReaderProducer.create(className))
 
     // Then
     result.verified should be (false)
