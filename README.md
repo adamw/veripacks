@@ -115,6 +115,29 @@ The project files are deployed to Sonatype's OSS public Nexus repository, which 
         <scope>test</scope>
     </dependency>
 
+Requiring import for 3rd party libraries
+----------------------------------------
+
+It is also possible to constrain the usage of 3rd party packages using Veripacks. When a `Veripacks` instance is
+constructed, it is possible to specify additional packages for which import is required:
+
+````scala
+VeripacksBuilder
+    .requireImportOf("org.hibernate")
+    .requireImportOf("com.softwaremill")
+    .build
+    .verify("com.company.project")
+    .throwIfNotOk()
+````
+
+Then if a Hibernate class is used in a class in the `com.company.project` package (or a child package), it's usage
+is verified. That is, some package must contain the `@Import("org.hibernate")` annotation (the import may be of any
+child package, so when using only commons, `@Import("org.hibernate.common")` will work as well).
+
+The package names are checked by prefix, so to check usages of all `com` packages, just inovke
+`requireImportOf("com.")`. To exclude a class, invoke `doNotRequireImportOf("com.softwaremill")` before including
+`"com"`. Filters defined earlier have precedence.
+
 Specifying a custom metadata reader
 -----------------------------------
 
