@@ -7,11 +7,11 @@ import org.veripacks._
 import org.veripacks.ClassUsage
 
 @Export
-class ClassDependenciesReader(classUsageFilter: ClassNameFilter) extends Logging {
+class ClassDependenciesReader(additionalClassNameFilter: ClassNameFilter) extends Logging {
   def read(dependenciesOf: ClassName, classReader: ClassReader, scope: Iterable[Pkg]): Iterable[ClassUsage] = {
     def inScope(className: ClassName) = {
       scope.exists(className.pkg.isChildPackageOf) ||
-        (classUsageFilter.includes(className) == ClassNameFilter.Yes)
+        (additionalClassNameFilter.includes(className) == ClassNameFilter.Yes)
     }
 
     logger.debug(s"Reading dependencies of $dependenciesOf with scope $scope.")

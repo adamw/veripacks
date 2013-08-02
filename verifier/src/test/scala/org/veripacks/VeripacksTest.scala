@@ -67,7 +67,7 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
   it should "report import errors when 3rd party libs are checked and not imported" in {
     // When
     val result = VeripacksBuilder
-      .checkUsagesOfClassesFrom("com.typesafe")
+      .requireImportOf("com.typesafe")
       .build
       .verify(List("org.veripacks.data.t7"))
 
@@ -78,7 +78,7 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
   it should "report no import errors when 3rd party libs are checked and imported" in {
     // When
     val result = VeripacksBuilder
-      .checkUsagesOfClassesFrom("com.typesafe")
+      .requireImportOf("com.typesafe")
       .build
       .verify(List("org.veripacks.data.t8"))
 

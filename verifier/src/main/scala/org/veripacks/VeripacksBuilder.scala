@@ -8,7 +8,7 @@ import scala.collection.JavaConverters._
 
 @NotVerified
 trait VeripacksBuilder {
-  lazy val classDependenciesReader = new ClassDependenciesReader(classNameFilter)
+  lazy val classDependenciesReader = new ClassDependenciesReader(requireImportFilter)
   lazy val singleClassAccessDefinitionsReader = new ClassAccessDefinitionsReader()
   lazy val accessDefinitionsAccumulator = new AccessDefinitionsAccumulator()
 
@@ -23,50 +23,50 @@ trait VeripacksBuilder {
   lazy val veripacks = new Veripacks(metadataReader, verifier)
 
   def customAccessDefinitionsReader: CustomAccessDefinitionsReader
-  def classNameFilter: ClassNameFilter
+  def requireImportFilter: ClassNameFilter
 }
 
 object VeripacksBuilder {
   private var _customAccessDefinitionsReader: CustomAccessDefinitionsReader = NoOpCustomAccessDefinitionsReader
-  private var _classNameFilter: ClassNameFilter = AllUnknownClassNameFilter
+  private var _requireImportFilter: ClassNameFilter = AllUnknownClassNameFilter
 
   def withCustomAccessDefinitionReader(newCustomAccessDefinitionsReader: CustomAccessDefinitionsReader) = {
     _customAccessDefinitionsReader = newCustomAccessDefinitionsReader
     this
   }
 
-  def checkUsagesOfClassesFrom(packagePrefix: String): this.type = {
-    checkUsagesOfClassesFrom(List(packagePrefix))
+  def requireImportOf(packagePrefix: String): this.type = {
+    requireImportOf(List(packagePrefix))
     this
   }
 
-  def checkUsagesOfClassesFrom(packagePrefixes: java.util.Collection[String]): this.type = {
-    checkUsagesOfClassesFrom(packagePrefixes.asScala)
+  def requireImportOf(packagePrefixes: java.util.Collection[String]): this.type = {
+    requireImportOf(packagePrefixes.asScala)
     this
   }
 
-  def checkUsagesOfClassesFrom(packagePrefixes: Iterable[String]): this.type = {
-    _classNameFilter = _classNameFilter.or(IncludeClassNameFilter(packagePrefixes))
+  def requireImportOf(packagePrefixes: Iterable[String]): this.type = {
+    _requireImportFilter = _requireImportFilter.or(IncludeClassNameFilter(packagePrefixes))
     this
   }
 
-  def doNotCheckUsagesOfClassesFrom(packagePrefix: String): this.type = {
-    doNotCheckUsagesOfClassesFrom(List(packagePrefix))
+  def doNotRequireImportOf(packagePrefix: String): this.type = {
+    doNotRequireImportOf(List(packagePrefix))
     this
   }
 
-  def doNotCheckUsagesOfClassesFrom(packagePrefixes: java.util.Collection[String]): this.type = {
-    doNotCheckUsagesOfClassesFrom(packagePrefixes.asScala)
+  def doNotRequireImportOf(packagePrefixes: java.util.Collection[String]): this.type = {
+    doNotRequireImportOf(packagePrefixes.asScala)
     this
   }
 
-  def doNotCheckUsagesOfClassesFrom(packagePrefixes: Iterable[String]): this.type = {
-    _classNameFilter = _classNameFilter.or(ExcludeClassNameFilter(packagePrefixes))
+  def doNotRequireImportOf(packagePrefixes: Iterable[String]): this.type = {
+    _requireImportFilter = _requireImportFilter.or(ExcludeClassNameFilter(packagePrefixes))
     this
   }
 
   def build = new VeripacksBuilder {
     def customAccessDefinitionsReader = _customAccessDefinitionsReader
-    def classNameFilter = _classNameFilter
+    def requireImportFilter = _requireImportFilter
   }.veripacks
 }
