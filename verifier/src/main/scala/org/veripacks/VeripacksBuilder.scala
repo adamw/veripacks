@@ -23,12 +23,12 @@ trait VeripacksBuilder {
   lazy val veripacks = new Veripacks(metadataReader, verifier)
 
   def customAccessDefinitionsReader: CustomAccessDefinitionsReader
-  def requireImportFilter: ClassNameFilter
+  def requireImportFilter: PkgFilter
 }
 
 object VeripacksBuilder {
   private var _customAccessDefinitionsReader: CustomAccessDefinitionsReader = NoOpCustomAccessDefinitionsReader
-  private var _requireImportFilter: ClassNameFilter = AllUnknownClassNameFilter
+  private var _requireImportFilter: PkgFilter = AllUnknownPkgFilter
 
   def withCustomAccessDefinitionReader(newCustomAccessDefinitionsReader: CustomAccessDefinitionsReader) = {
     _customAccessDefinitionsReader = newCustomAccessDefinitionsReader
@@ -46,7 +46,7 @@ object VeripacksBuilder {
   }
 
   def requireImportOf(packagePrefixes: Iterable[String]): this.type = {
-    _requireImportFilter = _requireImportFilter.or(IncludeClassNameFilter(packagePrefixes))
+    _requireImportFilter = _requireImportFilter.or(IncludePkgFilter(packagePrefixes))
     this
   }
 
@@ -61,7 +61,7 @@ object VeripacksBuilder {
   }
 
   def doNotRequireImportOf(packagePrefixes: Iterable[String]): this.type = {
-    _requireImportFilter = _requireImportFilter.or(ExcludeClassNameFilter(packagePrefixes))
+    _requireImportFilter = _requireImportFilter.or(ExcludePkgFilter(packagePrefixes))
     this
   }
 
