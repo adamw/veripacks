@@ -4,7 +4,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 import org.veripacks._
 import org.veripacks.reader.ClassReaderProducer
-import org.veripacks.IncludeClassUsageFilter
+import org.veripacks.IncludeClassNameFilter
 
 class ClassDependenciesReaderTest extends FlatSpec with ShouldMatchers {
   val rootPkg = Pkg("org.veripacks.data.dependenciesreader")
@@ -33,7 +33,7 @@ class ClassDependenciesReaderTest extends FlatSpec with ShouldMatchers {
   for (testData <- testDatas) {
     it should s"read dependencies in ${testData.usagesIn.name} with scope ${testData.scope}" in {
       // When
-      val result = new ClassDependenciesReader(AllUnknownClassUsageFilter)
+      val result = new ClassDependenciesReader(AllUnknownClassNameFilter)
         .read(testData.usagesIn, ClassReaderProducer.create(testData.usagesIn), testData.scope)
 
       // Then
@@ -44,7 +44,7 @@ class ClassDependenciesReaderTest extends FlatSpec with ShouldMatchers {
 
   it should "read third party dependencies" in {
     // When
-    val filter = AllUnknownClassUsageFilter.or(IncludeClassUsageFilter(List("com.typesafe")))
+    val filter = AllUnknownClassNameFilter.or(IncludeClassNameFilter(List("com.typesafe")))
     val usagesIn = ClassName(rootPkg, "ThirdPartyUsage")
     val result = new ClassDependenciesReader(filter)
       .read(usagesIn, ClassReaderProducer.create(usagesIn), rootPkgList)

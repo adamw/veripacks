@@ -8,7 +8,7 @@ import scala.collection.JavaConverters._
 
 @NotVerified
 trait VeripacksBuilder {
-  lazy val classDependenciesReader = new ClassDependenciesReader(classUsageFilter)
+  lazy val classDependenciesReader = new ClassDependenciesReader(classNameFilter)
   lazy val singleClassAccessDefinitionsReader = new ClassAccessDefinitionsReader()
   lazy val accessDefinitionsAccumulator = new AccessDefinitionsAccumulator()
 
@@ -23,12 +23,12 @@ trait VeripacksBuilder {
   lazy val veripacks = new Veripacks(metadataReader, verifier)
 
   def customAccessDefinitionsReader: CustomAccessDefinitionsReader
-  def classUsageFilter: ClassUsageFilter
+  def classNameFilter: ClassNameFilter
 }
 
 object VeripacksBuilder {
   private var _customAccessDefinitionsReader: CustomAccessDefinitionsReader = NoOpCustomAccessDefinitionsReader
-  private var _classUsageFilter: ClassUsageFilter = AllUnknownClassUsageFilter
+  private var _classNameFilter: ClassNameFilter = AllUnknownClassNameFilter
 
   def withCustomAccessDefinitionReader(newCustomAccessDefinitionsReader: CustomAccessDefinitionsReader) = {
     _customAccessDefinitionsReader = newCustomAccessDefinitionsReader
@@ -46,7 +46,7 @@ object VeripacksBuilder {
   }
 
   def checkUsagesOfClassesFrom(packagePrefixes: Iterable[String]): this.type = {
-    _classUsageFilter = _classUsageFilter.or(IncludeClassUsageFilter(packagePrefixes))
+    _classNameFilter = _classNameFilter.or(IncludeClassNameFilter(packagePrefixes))
     this
   }
 
@@ -61,12 +61,12 @@ object VeripacksBuilder {
   }
 
   def doNotCheckUsagesOfClassesFrom(packagePrefixes: Iterable[String]): this.type = {
-    _classUsageFilter = _classUsageFilter.or(ExcludeClassUsageFilter(packagePrefixes))
+    _classNameFilter = _classNameFilter.or(ExcludeClassNameFilter(packagePrefixes))
     this
   }
 
   def build = new VeripacksBuilder {
     def customAccessDefinitionsReader = _customAccessDefinitionsReader
-    def classUsageFilter = _classUsageFilter
+    def classNameFilter = _classNameFilter
   }.veripacks
 }
