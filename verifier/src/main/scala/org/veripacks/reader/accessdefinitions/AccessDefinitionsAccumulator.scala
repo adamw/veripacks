@@ -3,9 +3,10 @@ package org.veripacks.reader.accessdefinitions
 import org.veripacks._
 import scala.collection.mutable.ListBuffer
 import com.typesafe.scalalogging.slf4j.Logging
+import org.veripacks.PkgFilter.Yes
 
 @Export
-class AccessDefinitionsAccumulator extends Logging {
+class AccessDefinitionsAccumulator(additionalRequireImportFilter: PkgFilter) extends Logging {
   private val exportDefs = collection.mutable.HashMap[Pkg, ExportDef]()
   private val importDefs = collection.mutable.HashMap[Pkg, ImportDef]()
   private val requiresImport = collection.mutable.HashSet[Pkg]()
@@ -115,7 +116,7 @@ class AccessDefinitionsAccumulator extends Logging {
       importedPkg <- importDef.pkgs
     } {
       def validate_importingOnlyPackagesWhichRequireImport() {
-        if (!requiresImport.contains(importedPkg)) {
+        if (!requiresImport.contains(importedPkg) && additionalRequireImportFilter.includes(importedPkg) != Yes) {
           errors += AccessDefinitionError(s"Package ${pkg.name} imports package ${importedPkg.name}, but it doesn't require importing")
         }
       }

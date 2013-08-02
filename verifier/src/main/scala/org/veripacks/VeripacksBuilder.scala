@@ -10,7 +10,7 @@ import scala.collection.JavaConverters._
 trait VeripacksBuilder {
   lazy val classDependenciesReader = new ClassDependenciesReader(requireImportFilter)
   lazy val singleClassAccessDefinitionsReader = new ClassAccessDefinitionsReader()
-  lazy val accessDefinitionsAccumulator = new AccessDefinitionsAccumulator()
+  lazy val accessDefinitionsAccumulator = new AccessDefinitionsAccumulator(requireImportFilter)
 
   lazy val metadataReader = new MetadataReader(classDependenciesReader,
     singleClassAccessDefinitionsReader,

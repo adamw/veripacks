@@ -15,7 +15,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
 
   it should "accumulate several export classes definitions in the same pacakge" in {
     // When
-    val acc = new AccessDefinitionsAccumulator
+    val acc = new AccessDefinitionsAccumulator(AllUnknownPkgFilter)
     addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
     addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls2")))))
     addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls3"), ClassName(pkg1, "cls4")))))
@@ -33,7 +33,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
 
   it should "report an error if both export and export all definitions are used for a package" in {
     // When
-    val acc = new AccessDefinitionsAccumulator
+    val acc = new AccessDefinitionsAccumulator(AllUnknownPkgFilter)
     addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
     addExportDefinition(acc, pkg1, ExportDef.All)
 
@@ -47,7 +47,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
 
   it should "accumulate export all definition" in {
     // When
-    val acc = new AccessDefinitionsAccumulator
+    val acc = new AccessDefinitionsAccumulator(AllUnknownPkgFilter)
     addExportDefinition(acc, pkg1, ExportDef.All)
     addExportDefinition(acc, pkg2, ExportDef.All)
 
@@ -64,7 +64,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
 
   it should "accumulate various definitions in one map" in {
     // When
-    val acc = new AccessDefinitionsAccumulator
+    val acc = new AccessDefinitionsAccumulator(AllUnknownPkgFilter)
     addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
     addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls2")))))
     addExportDefinition(acc, pkg2, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg2, "cls3"))), ExportAllPkgsDef))
@@ -84,7 +84,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
 
   it should "overwrite undefined with specific definitions" in {
     // When
-    val acc = new AccessDefinitionsAccumulator
+    val acc = new AccessDefinitionsAccumulator(AllUnknownPkgFilter)
     addExportDefinition(acc, pkg1, ExportDef.Undefined)
     addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
 
@@ -100,7 +100,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
 
   it should "not overwrite specific with undefined definitions" in {
     // When
-    val acc = new AccessDefinitionsAccumulator
+    val acc = new AccessDefinitionsAccumulator(AllUnknownPkgFilter)
     addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
     addExportDefinition(acc, pkg1, ExportDef.Undefined)
 
@@ -116,7 +116,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
 
   it should "accumulate both export classes and export subpackages" in {
     // When
-    val acc = new AccessDefinitionsAccumulator
+    val acc = new AccessDefinitionsAccumulator(AllUnknownPkgFilter)
     addExportDefinition(acc, pkg1, ExportDef(ExportSpecificClassesDef(Set(ClassName(pkg1, "cls1")))))
     addExportDefinition(acc, pkg1, ExportDef(ExportSpecificPkgsDef(Set(pkg1sub1))))
 
@@ -149,7 +149,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
 
   it should "report an error if both export all classes/subpackages and export all definitions are used for a package" in {
     // When
-    val acc = new AccessDefinitionsAccumulator
+    val acc = new AccessDefinitionsAccumulator(AllUnknownPkgFilter)
     addExportDefinition(acc, pkg1, ExportDef(ExportAllClassesDef))
     addExportDefinition(acc, pkg1, ExportDef.All)
 
@@ -167,7 +167,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
 
   it should "accumulate import definitions" in {
     // When
-    val acc = new AccessDefinitionsAccumulator
+    val acc = new AccessDefinitionsAccumulator(AllUnknownPkgFilter)
     acc.addSingleClassAccessDefinitions(pkg1, ClassAccessDefinitions(Nil, ImportDef(Set(pkg2, pkg3)), requiresImport = false, verified = true))
     acc.addSingleClassAccessDefinitions(pkg2, ClassAccessDefinitions(Nil, ImportDef(Set(pkg3sub1)), requiresImport = true, verified = true))
     acc.addSingleClassAccessDefinitions(pkg3, ClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true, verified = true))
@@ -187,7 +187,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
 
   it should "accumulate both import and export definitions" in {
     // When
-    val acc = new AccessDefinitionsAccumulator
+    val acc = new AccessDefinitionsAccumulator(AllUnknownPkgFilter)
     acc.addSingleClassAccessDefinitions(pkg1, ClassAccessDefinitions(List(ExportDef(ExportAllClassesDef)), ImportDef(Set(pkg2)), requiresImport = true, verified = true))
     acc.addSingleClassAccessDefinitions(pkg2, ClassAccessDefinitions(Nil, ImportDef(Set(pkg1)), requiresImport = false, verified = true))
     acc.addSingleClassAccessDefinitions(pkg2, ClassAccessDefinitions(List(ExportDef(ExportAllPkgsDef)), ImportDef(Set(pkg3)), requiresImport = true, verified = true))
@@ -210,7 +210,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
 
   it should "report an error when importing a package which doesn't require import" in {
     // When
-    val acc = new AccessDefinitionsAccumulator
+    val acc = new AccessDefinitionsAccumulator(AllUnknownPkgFilter)
     acc.addSingleClassAccessDefinitions(pkg1, ClassAccessDefinitions(Nil, ImportDef(Set(pkg2)), requiresImport = false, verified = true))
 
     val result = acc.build
@@ -224,7 +224,7 @@ class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with
 
   it should "report an error when importing a parent package" in {
     // When
-    val acc = new AccessDefinitionsAccumulator
+    val acc = new AccessDefinitionsAccumulator(AllUnknownPkgFilter)
     acc.addSingleClassAccessDefinitions(pkg1, ClassAccessDefinitions(Nil, ImportDef(Set()), requiresImport = true, verified = true))
     acc.addSingleClassAccessDefinitions(pkg1sub1, ClassAccessDefinitions(Nil, ImportDef(Set(pkg1)), requiresImport = false, verified = true))
 
