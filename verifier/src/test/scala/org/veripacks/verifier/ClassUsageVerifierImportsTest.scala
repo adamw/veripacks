@@ -26,7 +26,7 @@ class ClassUsageVerifierImportsTest extends FlatSpec with ShouldMatchers with Cl
 
    for ((desc, imports, requiresImport, clsUsed, clsUsedIn, expectedResult) <- testData) {
      it should desc in {
-       val result = new ClassUsageVerifier(AccessDefinitions(Map(), imports, requiresImport))
+       val result = new ClassUsageVerifier(AccessDefinitions(Map(), imports, requiresImport), AllUnknownPkgFilter)
          .verify(ClassUsage(clsUsed, clsUsedIn, MethodBodyUsageDetail("", "", 0)))
 
        result should be (expectedResult)

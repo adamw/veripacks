@@ -17,7 +17,8 @@ trait VeripacksBuilder {
     accessDefinitionsAccumulator,
     customAccessDefinitionsReader)
 
-  def createClassUsageVerifier(accessDefinitions: AccessDefinitions) = new ClassUsageVerifier(accessDefinitions)
+  def createClassUsageVerifier(accessDefinitions: AccessDefinitions) = new ClassUsageVerifier(
+    accessDefinitions, requireImportFilter)
   lazy val verifier = new Verifier(createClassUsageVerifier)
 
   lazy val veripacks = new Veripacks(metadataReader, verifier)

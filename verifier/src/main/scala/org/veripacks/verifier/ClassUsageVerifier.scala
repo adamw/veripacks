@@ -5,7 +5,7 @@ import com.typesafe.scalalogging.slf4j.Logging
 import org.veripacks._
 import ClassUsageVerifierResult._
 
-class ClassUsageVerifier(accessDefinitions: AccessDefinitions) extends Logging {
+class ClassUsageVerifier(accessDefinitions: AccessDefinitions, requireImportFilter: PkgFilter) extends Logging {
   /**
    * Suppose that we are checking if class A can be used in class B.
    * These classes have some first common ancestor, package P. The structure is as follows (<- means is parent of):
