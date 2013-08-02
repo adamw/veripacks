@@ -64,6 +64,28 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
     verifyBrokenConstraintsOnlyFrom(result, classOf[Class621], classOf[Class611])
   }
 
+  it should "report import errors when 3rd party libs are checked and not imported" in {
+    // When
+    val result = VeripacksBuilder
+      .checkUsagesOfClassesFrom("com.typesafe")
+      .build
+      .verify(List("org.veripacks.data.t7"))
+
+    // Then
+    verifyBrokenConstraintsOnlyFrom(result, classOf[com.typesafe.scalalogging.slf4j.Logger], classOf[Class71])
+  }
+
+  it should "report no import errors when 3rd party libs are checked and imported" in {
+    // When
+    val result = VeripacksBuilder
+      .checkUsagesOfClassesFrom("com.typesafe")
+      .build
+      .verify(List("org.veripacks.data.t8"))
+
+    // Then
+    result should be (VerifyResultOk)
+  }
+
   def verifyBrokenConstraintsOnlyFrom(result: VerifyResult, cls: Class[_], usedIn: Class[_]) = {
     result match {
       case VerifyResultBrokenConstraints(brokenConstraints) => {
