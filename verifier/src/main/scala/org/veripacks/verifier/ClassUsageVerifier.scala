@@ -4,8 +4,9 @@ import scala.annotation.tailrec
 import com.typesafe.scalalogging.slf4j.Logging
 import org.veripacks._
 import ClassUsageVerifierResult._
+import org.veripacks.PkgFilter.Yes
 
-class ClassUsageVerifier(accessDefinitions: AccessDefinitions, requireImportFilter: PkgFilter) extends Logging {
+class ClassUsageVerifier(accessDefinitions: AccessDefinitions, additionalRequireImportFilter: PkgFilter) extends Logging {
   /**
    * Suppose that we are checking if class A can be used in class B.
    * These classes have some first common ancestor, package P. The structure is as follows (<- means is parent of):
@@ -33,7 +34,7 @@ class ClassUsageVerifier(accessDefinitions: AccessDefinitions, requireImportFilt
       () => isPkgUsageAllowedByImport(classUsage)
     ))
 
-    logger.debug(s"Result of verifying usage of ${classUsage.cls.fullName} in ${classUsage.usedIn.fullName} is: ${result}.")
+    logger.debug(s"Result of verifying usage of ${classUsage.cls.fullName} in ${classUsage.usedIn.fullName} is: $result.")
 
     result
   }
@@ -116,7 +117,13 @@ class ClassUsageVerifier(accessDefinitions: AccessDefinitions, requireImportFilt
 
   private def isPkgUsageAllowedByImport(classUsage: ClassUsage): ClassUsageVerifierResult = {
     val toCheck = pkgsWhichMustBeImported(classUsage)
-    isPkgUsageAllowedByImport(classUsage.usedIn.pkg, toCheck)
+    val result = isPkgUsageAllowedByImport(classUsage.usedIn.pkg, toCheck)
+
+    if (result == Allowed && additionalRequireImportFilter.includes(classUsage.cls.pkg) == Yes) {
+      isAdditionalPkgUsageAllowedByImport(classUsage.usedIn.pkg, classUsage.cls.pkg)
+    } else {
+      result
+    }
   }
 
   private def pkgsWhichMustBeImported(classUsage: ClassUsage) = {
@@ -140,6 +147,19 @@ class ClassUsageVerifier(accessDefinitions: AccessDefinitions, requireImportFilt
         }
         case Some(parent) => isPkgUsageAllowedByImport(parent, newToCheck)
       }
+    }
+  }
+
+  @tailrec
+  private def isAdditionalPkgUsageAllowedByImport(pkg: Pkg, usedPkg: Pkg): ClassUsageVerifierResult = {
+    val importedPkgs = accessDefinitions.importedPkgsFor(pkg)
+    val anyImportedIsParentOfUsed = importedPkgs.exists(p => usedPkg.name.startsWith(p.name))
+
+    if (anyImportedIsParentOfUsed) {
+      Allowed
+    } else pkg.parent match {
+      case None => PackageNotImported(usedPkg)
+      case Some(parent) => isAdditionalPkgUsageAllowedByImport(parent, usedPkg)
     }
   }
 }

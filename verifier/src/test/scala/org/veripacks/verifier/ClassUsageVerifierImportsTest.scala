@@ -32,4 +32,26 @@ class ClassUsageVerifierImportsTest extends FlatSpec with ShouldMatchers with Cl
        result should be (expectedResult)
      }
    }
+
+  val smlPkg = Pkg("com.softwaremill")
+  val smlCommonPkg = smlPkg.child("common")
+  val smlCommonClass = ClassName(smlCommonPkg.child("util"), "RichString")
+
+  val thirdPartyTestData = List[(String, Map[Pkg, ImportDef], ClassName, ClassName, ClassUsageVerifierResult)](
+    ("allow using a class from a 3rd party library package if the package is imported and included by the filter",
+      Map(pkg1 -> ImportDef(Set(smlPkg))), smlCommonClass, cls1_in_pkg1_1, Allowed),
+    ("allow using a class from a 3rd party library package if the package is imported and a parent is included by the filter",
+      Map(pkg1 -> ImportDef(Set(smlCommonPkg))), smlCommonClass, cls1_in_pkg1_1, Allowed),
+    ("forbid using a class from a 3rd party library package if the package is not imported and included by the filter",
+      Map(), smlCommonClass, cls1_in_pkg1_1, PackageNotImported(smlCommonClass.pkg))
+  )
+
+  for ((desc, imports, clsUsed, clsUsedIn, expectedResult) <- thirdPartyTestData) {
+    it should desc in {
+      val result = new ClassUsageVerifier(AccessDefinitions(Map(), imports, Set()), IncludePkgFilter(List(smlPkg.name)))
+        .verify(ClassUsage(clsUsed, clsUsedIn, MethodBodyUsageDetail("", "", 0)))
+
+      result should be (expectedResult)
+    }
+  }
  }
