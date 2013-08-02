@@ -35,7 +35,6 @@ class CompoundClassUsageFilter(first: ClassUsageFilter, second: ClassUsageFilter
 
 abstract class PackagePrefixesClassUsageFilter(packagePrefixes: Iterable[String]) extends ClassUsageFilter {
   protected def classUsageInScope(classUsage: ClassUsage) = {
-    println(packagePrefixes)
     val pkg = classUsage.cls.pkg.name
     packagePrefixes.exists(pkg.startsWith)
   }
