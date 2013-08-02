@@ -138,6 +138,8 @@ The package names are checked by prefix, so to check usages of all `com` package
 `requireImportOf("com")`. To exclude a class, invoke `doNotRequireImportOf("com.softwaremill")` before including
 `"com"`. Filters defined earlier have precedence.
 
+This is similar to creating a separate build-module and adding the Hibernate dependency to it only.
+
 Specifying a custom metadata reader
 -----------------------------------
 
@@ -161,16 +163,12 @@ VeripacksBuilder
 What's next?
 ------------
 
-* extend `@Import` to work with third-party packages (libraries)
 * allow to specify which classes/subpackages are exported in a separate file
 * IDE support
 
-The first two points will allow to constrain usage of external libraries. For example, if using Hibernate, we could
+The first point will allow to further constrain usage of external libraries. For example, if using Hibernate, we could
 specify that only classes from the `org.hibernate` package should be accessible, while classes from
-`org.hibernate.internal` - not. Furthermore, by specifying that Hibernate needs to be explicitly imported, we could
-verify that only packages that contain a `@Import("org.hibernate")` can access the Hibernate classes.
-
-This is similar to creating a separate build-module and adding the Hibernate dependency to it only.
+`org.hibernate.internal` - not.
 
 Sub- and child- packages
 ------------------------
