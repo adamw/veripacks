@@ -3,13 +3,14 @@ package org.veripacks.reader.dependencies
 import com.typesafe.scalalogging.slf4j.Logging
 import collection.mutable.ListBuffer
 import org.objectweb.asm._
-import org.veripacks.{Pkg, Export, ClassName, ClassUsage}
+import org.veripacks._
+import org.veripacks.ClassUsage
 
 @Export
-class ClassDependenciesReader extends Logging {
+class ClassDependenciesReader(classUsageFilter: ClassUsageFilter) extends Logging {
   def read(dependenciesOf: ClassName, classReader: ClassReader, scope: Iterable[Pkg]): Iterable[ClassUsage] = {
     def inScope(className: ClassName) = {
-      scope.exists(className.pkg.isChildPackageOf(_))
+      scope.exists(className.pkg.isChildPackageOf)
     }
 
     logger.debug(s"Reading dependencies of $dependenciesOf with scope $scope.")

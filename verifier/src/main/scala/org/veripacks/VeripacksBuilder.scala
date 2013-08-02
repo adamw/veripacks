@@ -8,7 +8,7 @@ import scala.collection.JavaConverters._
 
 @NotVerified
 trait VeripacksBuilder {
-  lazy val classDependenciesReader = new ClassDependenciesReader()
+  lazy val classDependenciesReader = new ClassDependenciesReader(classUsageFilter)
   lazy val singleClassAccessDefinitionsReader = new ClassAccessDefinitionsReader()
   lazy val accessDefinitionsAccumulator = new AccessDefinitionsAccumulator()
 
@@ -23,6 +23,7 @@ trait VeripacksBuilder {
   lazy val veripacks = new Veripacks(metadataReader, verifier)
 
   def customAccessDefinitionsReader: CustomAccessDefinitionsReader
+  def classUsageFilter: ClassUsageFilter
 }
 
 object VeripacksBuilder {
@@ -66,5 +67,6 @@ object VeripacksBuilder {
 
   def build = new VeripacksBuilder {
     def customAccessDefinitionsReader = _customAccessDefinitionsReader
+    def classUsageFilter = _classUsageFilter
   }.veripacks
 }
