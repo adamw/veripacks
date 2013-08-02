@@ -29,7 +29,7 @@ trait VeripacksBuilder {
 
 object VeripacksBuilder {
   private var _customAccessDefinitionsReader: CustomAccessDefinitionsReader = NoOpCustomAccessDefinitionsReader
-  private var _requireImportFilter: PkgFilter = AllUnknownPkgFilter
+  private var _requireImportFilter: PkgFilter = ExcludePkgFilter(List("java", "scala"))
 
   def withCustomAccessDefinitionReader(newCustomAccessDefinitionsReader: CustomAccessDefinitionsReader) = {
     _customAccessDefinitionsReader = newCustomAccessDefinitionsReader
