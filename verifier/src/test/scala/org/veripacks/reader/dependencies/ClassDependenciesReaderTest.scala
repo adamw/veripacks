@@ -2,8 +2,9 @@ package org.veripacks.reader.dependencies
 
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
-import org.veripacks.{AllUnknownClassUsageFilter, Pkg, ClassName}
+import org.veripacks._
 import org.veripacks.reader.ClassReaderProducer
+import org.veripacks.IncludeClassUsageFilter
 
 class ClassDependenciesReaderTest extends FlatSpec with ShouldMatchers {
   val rootPkg = Pkg("org.veripacks.data.dependenciesreader")
@@ -39,5 +40,17 @@ class ClassDependenciesReaderTest extends FlatSpec with ShouldMatchers {
       val usedClasses = result.map(cu => cu.cls).toSet
       usedClasses should be (testData.expectedUsedClasses)
     }
+  }
+
+  it should "read third party dependencies" in {
+    // When
+    val filter = AllUnknownClassUsageFilter.or(IncludeClassUsageFilter(List("com.typesafe")))
+    val usagesIn = ClassName(rootPkg, "ThirdPartyUsage")
+    val result = new ClassDependenciesReader(filter)
+      .read(usagesIn, ClassReaderProducer.create(usagesIn), rootPkgList)
+
+    // Then
+    val usedClasses = result.map(cu => cu.cls).toSet
+    usedClasses should be (Set(ClassName(Pkg("com.typesafe.scalalogging.slf4j"), "Logger$")))
   }
 }

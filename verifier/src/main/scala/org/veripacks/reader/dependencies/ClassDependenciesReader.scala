@@ -9,8 +9,9 @@ import org.veripacks.ClassUsage
 @Export
 class ClassDependenciesReader(classUsageFilter: ClassUsageFilter) extends Logging {
   def read(dependenciesOf: ClassName, classReader: ClassReader, scope: Iterable[Pkg]): Iterable[ClassUsage] = {
-    def inScope(className: ClassName) = {
-      scope.exists(className.pkg.isChildPackageOf)
+    def inScope(classUsage: ClassUsage) = {
+      scope.exists(classUsage.cls.pkg.isChildPackageOf) ||
+        (classUsageFilter.shouldBeVerified(classUsage) == ClassUsageFilter.Yes)
     }
 
     logger.debug(s"Reading dependencies of $dependenciesOf with scope $scope.")
@@ -25,8 +26,9 @@ class ClassDependenciesReader(classUsageFilter: ClassUsageFilter) extends Loggin
 
     val usages = ListBuffer[ClassUsage]()
     for ((className, classUsageDetail) <- dependencyVisitor.usages) {
-      if (inScope(className) && className != dependenciesOf) {
-        usages += ClassUsage(className, dependenciesOf, classUsageDetail)
+      val classUsage = ClassUsage(className, dependenciesOf, classUsageDetail)
+      if (inScope(classUsage) && className != dependenciesOf) {
+        usages += classUsage
       }
     }
 
