@@ -72,7 +72,8 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
       .verify(List("org.veripacks.data.t7"))
 
     // Then
-    verifyBrokenConstraintsOnlyFrom(result, classOf[com.typesafe.scalalogging.slf4j.Logger], classOf[Class71])
+    verifyBrokenConstraintsOnlyFrom(result, classOf[com.typesafe.scalalogging.slf4j.Logger], classOf[Class71],
+      clsSuffix = "$")
   }
 
   it should "report no import errors when 3rd party libs are checked and imported" in {
@@ -86,11 +87,11 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
     result should be (VerifyResultOk)
   }
 
-  def verifyBrokenConstraintsOnlyFrom(result: VerifyResult, cls: Class[_], usedIn: Class[_]) = {
+  def verifyBrokenConstraintsOnlyFrom(result: VerifyResult, cls: Class[_], usedIn: Class[_], clsSuffix: String = "") = {
     result match {
       case VerifyResultBrokenConstraints(brokenConstraints) => {
         brokenConstraints.size should be > (0)
-        brokenConstraints.map(_._1.cls).toSet should be (Set(from(cls)))
+        brokenConstraints.map(_._1.cls).toSet should be (Set(from(cls, clsSuffix)))
         brokenConstraints.map(_._1.usedIn).toSet should be (Set(from(usedIn)))
         brokenConstraints.map(_._1.detail.sourceFileName).toSet should be (Set(s"${usedIn.getSimpleName}.scala"))
       }
@@ -98,5 +99,5 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
     }
   }
 
-  private def from(cls: Class[_]) = new ClassName(Pkg(cls.getPackage.getName), cls.getSimpleName)
+  private def from(cls: Class[_], suffix: String = "") = new ClassName(Pkg(cls.getPackage.getName), cls.getSimpleName + suffix)
 }
