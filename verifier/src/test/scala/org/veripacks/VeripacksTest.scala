@@ -8,6 +8,7 @@ import org.veripacks.data.t3.p32.Class321
 import org.veripacks.data.t3.p31.Class311
 import org.veripacks.data.t6.p61.Class611
 import org.veripacks.data.t6.p62.Class621
+import org.veripacks.data.t7.Class71
 
 class VeripacksTest extends FlatSpec with ShouldMatchers {
   it should "report export errors" in {
@@ -15,15 +16,7 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
     val result = VeripacksBuilder.build.verify(List("org.veripacks.data.t1"))
 
     // Then
-    result match {
-      case VerifyResultBrokenConstraints(brokenConstraints) => {
-        brokenConstraints.size should be > (0)
-        brokenConstraints.map(_._1.cls).toSet should be (Set(from(classOf[Class112])))
-        brokenConstraints.map(_._1.usedIn).toSet should be (Set(from(classOf[Class121])))
-        brokenConstraints.map(_._1.detail.sourceFileName).toSet should be (Set("Class121.scala"))
-      }
-      case _ => fail(s"Expected a broken constraints result, but got $result!")
-    }
+    verifyBrokenConstraintsOnlyFrom(result, classOf[Class112], classOf[Class121])
   }
 
   it should "report no export errors" in {
@@ -39,15 +32,7 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
     val result = VeripacksBuilder.build.verify(List("org.veripacks.data.t3"))
 
     // Then
-    result match {
-      case VerifyResultBrokenConstraints(brokenConstraints) => {
-        brokenConstraints.size should be > (0)
-        brokenConstraints.map(_._1.cls).toSet should be (Set(from(classOf[Class321])))
-        brokenConstraints.map(_._1.usedIn).toSet should be (Set(from(classOf[Class311])))
-        brokenConstraints.map(_._1.detail.sourceFileName).toSet should be (Set("Class311.scala"))
-      }
-      case _ => fail(s"Expected a broken constraints result, but got $result!")
-    }
+    verifyBrokenConstraintsOnlyFrom(result, classOf[Class321], classOf[Class311])
   }
 
   it should "report no import errors" in {
@@ -76,12 +61,16 @@ class VeripacksTest extends FlatSpec with ShouldMatchers {
       .verify(List("org.veripacks.data.t6"))
 
     // Then
+    verifyBrokenConstraintsOnlyFrom(result, classOf[Class621], classOf[Class611])
+  }
+
+  def verifyBrokenConstraintsOnlyFrom(result: VerifyResult, cls: Class[_], usedIn: Class[_]) = {
     result match {
       case VerifyResultBrokenConstraints(brokenConstraints) => {
         brokenConstraints.size should be > (0)
-        brokenConstraints.map(_._1.cls).toSet should be (Set(from(classOf[Class621])))
-        brokenConstraints.map(_._1.usedIn).toSet should be (Set(from(classOf[Class611])))
-        brokenConstraints.map(_._1.detail.sourceFileName).toSet should be (Set("Class611.scala"))
+        brokenConstraints.map(_._1.cls).toSet should be (Set(from(cls)))
+        brokenConstraints.map(_._1.usedIn).toSet should be (Set(from(usedIn)))
+        brokenConstraints.map(_._1.detail.sourceFileName).toSet should be (Set(s"${usedIn.getSimpleName}.scala"))
       }
       case _ => fail(s"Expected a broken constraints result, but got $result!")
     }
