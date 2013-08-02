@@ -34,8 +34,14 @@ class CompoundPkgFilter(first: PkgFilter, second: PkgFilter) extends PkgFilter {
 }
 
 abstract class PackagePrefixesPkgFilter(packagePrefixes: Iterable[String]) extends PkgFilter {
-  protected def pkgInScope(pkg: Pkg) = {
-    packagePrefixes.exists(pkg.name.startsWith)
+  protected def pkgInScope(pkg: Pkg): Boolean = {
+    packagePrefixes.find(pkg.name.startsWith) match {
+      case Some(prefix) => {
+        // Making sure only whole package name components match
+        prefix == "" || prefix == pkg.name || pkg.name.startsWith(prefix + ".")
+      }
+      case None => false
+    }
   }
 }
 

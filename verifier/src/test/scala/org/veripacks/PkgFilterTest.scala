@@ -18,6 +18,8 @@ class PkgFilterTest extends FlatSpec with ShouldMatchers {
     .or(ExcludePkgFilter(List("com.foo", "com.bar")))
     .or(IncludePkgFilter(List("com")))
 
+  val javaFilter = IncludePkgFilter(List("java"))
+
   it should "properly filter using the simple filter" in {
     simpleFilter.includes(Pkg("org.apache")) should be (Yes)
     simpleFilter.includes(Pkg("com.foo.baz")) should be (No)
@@ -35,5 +37,15 @@ class PkgFilterTest extends FlatSpec with ShouldMatchers {
     multiPackagesFilter.includes(Pkg("com.foo.baz")) should be (No)
     multiPackagesFilter.includes(Pkg("com.bar.baz")) should be (No)
     multiPackagesFilter.includes(Pkg("com.baz")) should be (Yes)
+  }
+
+  it should "filter whole package name components" in {
+    javaFilter.includes(Pkg("java.util.collection")) should be (Yes)
+    javaFilter.includes(Pkg("java.lang")) should be (Yes)
+    javaFilter.includes(Pkg("java")) should be (Yes)
+
+    javaFilter.includes(Pkg("javax.jms.corba")) should be (Unknown)
+    javaFilter.includes(Pkg("javax.jms")) should be (Unknown)
+    javaFilter.includes(Pkg("javax")) should be (Unknown)
   }
 }
