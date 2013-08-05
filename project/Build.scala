@@ -5,7 +5,7 @@ import scala.Some
 object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq (
     organization  := "org.veripacks",
-    version       := "0.4",
+    version       := "0.5-SNAPSHOT",
     scalaVersion  := "2.10.2",
     // Sonatype OSS deployment
     publishTo <<= version { (v: String) =>
