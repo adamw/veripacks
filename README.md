@@ -199,8 +199,9 @@ the metadata upfront in an "architecture" file or keeping it in an external file
 
 Licensed under Apache2.
 
-#### Version 0.4 (?? August 2013)
+#### Version 0.4 (5 August 2013)
 
+* support for 3rd party libraries imports
 * `@NotVerified` annotation
 * wireable code, overridable components
 
