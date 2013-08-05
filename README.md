@@ -181,6 +181,7 @@ isn't.
 Blogs about Veripacks
 ---------------------
 
+* [Verifying usage of 3rd party libraries using Veripacks](http://www.warski.org/blog/2013/08/verifying-usage-of-3rd-party-libraries-using-veripacks/)
 * [How to replace a build module with Veripacks](http://www.warski.org/blog/2013/03/how-to-replace-a-build-module-with-veripacks/)
 * [Veripacks 0.3: importing packages (transitively, of course)](http://www.warski.org/blog/2013/03/veripacks-0-3-importing-packages-transitively-of-course/)
 * [Veripacks 0.2: exporting subpackages](http://www.warski.org/blog/2013/02/veripacks-0-2-exporting-subpackages/)
