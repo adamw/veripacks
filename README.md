@@ -104,14 +104,14 @@ The project files are deployed to Sonatype's OSS public Nexus repository, which 
     <dependency>
         <groupId>org.veripacks</groupId>
         <artifactId>veripacks-annotations_2.10</artifactId>
-        <version>0.3</version>
+        <version>0.4</version>
     </dependency>
 
     <!-- The verifier, has a dependency on the annotations -->
     <dependency>
         <groupId>org.veripacks</groupId>
         <artifactId>veripacks-verifier_2.10</artifactId>
-        <version>0.3</version>
+        <version>0.4</version>
         <scope>test</scope>
     </dependency>
 
