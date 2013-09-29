@@ -219,3 +219,7 @@ Licensed under Apache2.
 
 * Initial release
 * Support for `@Export` and `@ExportAll` annotations
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/adamw/veripacks/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
