@@ -95,6 +95,12 @@ No build plugins or such are needed; just create a new test, with the following 
         .throwIfNotOk()
     }
 
+(Note: when using Veripacks from Java, you need to use:
+
+    VeripacksBuilder$.MODULE$.build()
+
+as that's how a Scala `object` is translated to Java.)
+
 This will throw an exception if there are some specification violations. You can also inspect the result of the
 `verify` call, which contains more detailed information (also included in the exception message).
 
