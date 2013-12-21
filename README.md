@@ -89,15 +89,19 @@ in Java-only projects.
 
 No build plugins or such are needed; just create a new test, with the following body:
 
-    public void runVeripacksTest() {
+    def runVeripacksTest() {
       VeripacksBuilder.build
         .verify("foo.bar")
         .throwIfNotOk()
     }
 
-(Note: when using Veripacks from Java, you need to use:
+(Note: when using Veripacks from Java, the above becomes:
 
-    VeripacksBuilder$.MODULE$.build()
+    public void runVeripacksTest() {
+      VeripacksBuilder$.MODULE$.build()
+        .verify("foo.bar")
+        .throwIfNotOk();
+    }
 
 as that's how a Scala `object` is translated to Java.)
 
