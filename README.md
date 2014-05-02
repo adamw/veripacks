@@ -113,15 +113,15 @@ The project files are deployed to Sonatype's OSS public Nexus repository, which 
     <!-- Only the annotations -->
     <dependency>
         <groupId>org.veripacks</groupId>
-        <artifactId>veripacks-annotations_2.10</artifactId>
-        <version>0.4</version>
+        <artifactId>veripacks-annotations_2.11</artifactId>
+        <version>0.4.1</version>
     </dependency>
 
     <!-- The verifier, has a dependency on the annotations -->
     <dependency>
         <groupId>org.veripacks</groupId>
-        <artifactId>veripacks-verifier_2.10</artifactId>
-        <version>0.4</version>
+        <artifactId>veripacks-verifier_2.11</artifactId>
+        <version>0.4.1</version>
         <scope>test</scope>
     </dependency>
 
@@ -233,7 +233,3 @@ Licensed under Apache2.
 
 * Initial release
 * Support for `@Export` and `@ExportAll` annotations
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/adamw/veripacks/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
