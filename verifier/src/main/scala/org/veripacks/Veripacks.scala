@@ -1,7 +1,6 @@
 package org.veripacks
 
 import org.veripacks.reader.{MetadataReader, ClassNamesLister}
-import com.typesafe.scalalogging.slf4j.Logging
 import org.veripacks.verifier.Verifier
 
 class Veripacks(metadataReader: MetadataReader, verifier: Verifier) extends Logging {

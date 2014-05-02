@@ -4,7 +4,7 @@ import collection.mutable
 import java.net.{URL, URLDecoder}
 import java.util.jar.JarFile
 import java.io.File
-import com.typesafe.scalalogging.slf4j.Logging
+import org.veripacks.Logging
 import scala.collection.JavaConverters._
 import org.veripacks.{Export, RootPkg, Pkg, ClassName}
 

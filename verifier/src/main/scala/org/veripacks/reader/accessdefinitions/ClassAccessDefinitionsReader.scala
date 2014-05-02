@@ -2,7 +2,6 @@ package org.veripacks.reader.accessdefinitions
 
 import org.veripacks._
 import org.objectweb.asm.{Type, ClassReader}
-import com.typesafe.scalalogging.slf4j.Logging
 import scala.collection.mutable
 
 @Export

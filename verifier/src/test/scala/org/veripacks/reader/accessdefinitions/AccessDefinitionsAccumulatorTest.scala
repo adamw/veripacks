@@ -3,7 +3,7 @@ package org.veripacks.reader.accessdefinitions
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.veripacks._
-import com.typesafe.scalalogging.slf4j.Logging
+import org.veripacks.Logging
 
 class AccessDefinitionsAccumulatorTest extends FlatSpec with ShouldMatchers with Logging {
   val pkg1 = Pkg("foo.bar.a")

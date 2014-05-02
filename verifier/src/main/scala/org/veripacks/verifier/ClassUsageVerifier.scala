@@ -1,7 +1,7 @@
 package org.veripacks.verifier
 
 import scala.annotation.tailrec
-import com.typesafe.scalalogging.slf4j.Logging
+import org.veripacks.Logging
 import org.veripacks._
 import ClassUsageVerifierResult._
 import org.veripacks.PkgFilter.Yes

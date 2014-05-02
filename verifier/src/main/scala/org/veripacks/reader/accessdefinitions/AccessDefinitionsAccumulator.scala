@@ -2,7 +2,7 @@ package org.veripacks.reader.accessdefinitions
 
 import org.veripacks._
 import scala.collection.mutable.ListBuffer
-import com.typesafe.scalalogging.slf4j.Logging
+import org.veripacks.Logging
 import org.veripacks.PkgFilter.Yes
 
 @Export

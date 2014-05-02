@@ -1,6 +1,6 @@
 package org.veripacks.reader.dependencies
 
-import com.typesafe.scalalogging.slf4j.Logging
+import org.veripacks.Logging
 import collection.mutable.ListBuffer
 import org.objectweb.asm._
 import org.veripacks._
