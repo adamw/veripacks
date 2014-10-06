@@ -5,7 +5,7 @@ import scala.Some
 object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq (
     organization  := "org.veripacks",
-    version       := "0.4.2",
+    version       := "0.5-SNAPSHOT",
     scalaVersion  := "2.11.2",
     javacOptions  ++= Seq("-source", "1.5", "-target", "1.5"),
     javacOptions in doc := Seq("-source", "1.5"),
