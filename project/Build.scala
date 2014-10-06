@@ -6,7 +6,9 @@ object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq (
     organization  := "org.veripacks",
     version       := "0.5-SNAPSHOT",
-    scalaVersion  := "2.11.0",
+    scalaVersion  := "2.11.2",
+    javacOptions  ++= Seq("-source", "1.5", "-target", "1.5"),
+    javacOptions in doc := Seq("-source", "1.5"),
     // Sonatype OSS deployment
     publishTo <<= version { (v: String) =>
       val nexus = "https://oss.sonatype.org/"
