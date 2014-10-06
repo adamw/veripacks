@@ -114,14 +114,14 @@ The project files are deployed to Sonatype's OSS public Nexus repository, which 
     <dependency>
         <groupId>org.veripacks</groupId>
         <artifactId>veripacks-annotations_2.11</artifactId>
-        <version>0.4.1</version>
+        <version>0.4.2</version>
     </dependency>
 
     <!-- The verifier, has a dependency on the annotations -->
     <dependency>
         <groupId>org.veripacks</groupId>
         <artifactId>veripacks-verifier_2.11</artifactId>
-        <version>0.4.1</version>
+        <version>0.4.2</version>
         <scope>test</scope>
     </dependency>
 
@@ -209,6 +209,10 @@ the metadata upfront in an "architecture" file or keeping it in an external file
 * packages are treated in a hierarchical manner, with proper parent-child relationships
 
 Licensed under Apache2.
+
+#### Version 0.4.2 (6 Oct 2014)
+
+* Java6 compatibility
 
 #### Version 0.4.1 (2 May 2014)
 
