@@ -5,8 +5,8 @@ import scala.Some
 object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq (
     organization  := "org.veripacks",
-    version       := "0.5-SNAPSHOT",
-    scalaVersion  := "2.11.2",
+    version       := "0.4.2-SNAPSHOT",
+    scalaVersion  := "2.11.6",
     javacOptions  ++= Seq("-source", "1.5", "-target", "1.5"),
     javacOptions in doc := Seq("-source", "1.5"),
     // Sonatype OSS deployment
@@ -40,13 +40,13 @@ object BuildSettings {
 }
 
 object Dependencies {
-  val asm           = "org.ow2.asm"               % "asm"                   % "5.0.2"
+  val asm           = "org.ow2.asm"               % "asm"                   % "5.0.4"
 
   val scalaLogging  = "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
-  val logback       = "ch.qos.logback"            % "logback-classic"       % "1.1.2"
+  val logback       = "ch.qos.logback"            % "logback-classic"       % "1.1.3"
 
-  val scalatest     = "org.scalatest"             %% "scalatest"            % "2.1.5"     % "test"
-  val mockito       = "org.mockito"               % "mockito-core"          % "1.9.5"     % "test"
+  val scalatest     = "org.scalatest"             %% "scalatest"            % "2.2.5"     % "test"
+  val mockito       = "org.mockito"               % "mockito-core"          % "1.10.19"   % "test"
 
   val testing = Seq(scalatest, mockito, logback % "test")
 }

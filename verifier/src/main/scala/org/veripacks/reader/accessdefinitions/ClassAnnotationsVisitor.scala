@@ -4,7 +4,7 @@ import org.objectweb.asm.{AnnotationVisitor, Type, Opcodes, ClassVisitor}
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-class ClassAnnotationsVisitor extends ClassVisitor(Opcodes.ASM4) {
+class ClassAnnotationsVisitor extends ClassVisitor(Opcodes.ASM5) {
   val annotationsWithValues = mutable.HashMap[Type, mutable.HashMap[String, Any]]()
 
   override def visitAnnotation(desc: String, visible: Boolean) = {
@@ -16,7 +16,7 @@ class ClassAnnotationsVisitor extends ClassVisitor(Opcodes.ASM4) {
   }
 }
 
-class AnnotationValuesVisitor(values: mutable.Map[String, Any]) extends AnnotationVisitor(Opcodes.ASM4) {
+class AnnotationValuesVisitor(values: mutable.Map[String, Any]) extends AnnotationVisitor(Opcodes.ASM5) {
   override def visit(name: String, value: Any) {
     values(name) = value
   }
@@ -28,7 +28,7 @@ class AnnotationValuesVisitor(values: mutable.Map[String, Any]) extends Annotati
   }
 }
 
-class AnnotationArrayValuesVisitor(arrayValues: ListBuffer[Any]) extends AnnotationVisitor(Opcodes.ASM4) {
+class AnnotationArrayValuesVisitor(arrayValues: ListBuffer[Any]) extends AnnotationVisitor(Opcodes.ASM5) {
   override def visit(name: String, value: Any) {
     arrayValues += value
   }

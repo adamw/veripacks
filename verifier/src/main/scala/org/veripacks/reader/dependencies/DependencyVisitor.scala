@@ -39,7 +39,7 @@ import org.veripacks._
  *
  * @author Eugene Kuleshov and Adam Warski
  */
-class DependencyVisitor(sourceFileName: String) extends ClassVisitor(Opcodes.ASM4) {
+class DependencyVisitor(sourceFileName: String) extends ClassVisitor(Opcodes.ASM5) {
   val usages = new collection.mutable.HashMap[ClassName, ClassUsageDetail]
 
   private var currentUsageDetail: ClassUsageDetail = _
@@ -160,7 +160,7 @@ class DependencyVisitor(sourceFileName: String) extends ClassVisitor(Opcodes.ASM
     }
   }
 
-  private class AnnotationDependencyVisitor extends AnnotationVisitor(Opcodes.ASM4) {
+  private class AnnotationDependencyVisitor extends AnnotationVisitor(Opcodes.ASM5) {
     override def visit(name: String, value: AnyRef) {
       if (value.isInstanceOf[Type]) {
         addType(value.asInstanceOf[Type])
@@ -181,14 +181,14 @@ class DependencyVisitor(sourceFileName: String) extends ClassVisitor(Opcodes.ASM
     }
   }
 
-  private class FieldDependencyVisitor extends FieldVisitor(Opcodes.ASM4) {
+  private class FieldDependencyVisitor extends FieldVisitor(Opcodes.ASM5) {
     override def visitAnnotation(desc: String, visible: Boolean) = {
       addDesc(desc)
       new AnnotationDependencyVisitor
     }
   }
 
-  private class MethodDependencyVisitor(methodName: String) extends MethodVisitor(Opcodes.ASM4) {
+  private class MethodDependencyVisitor(methodName: String) extends MethodVisitor(Opcodes.ASM5) {
     override def visitAnnotationDefault = {
       new AnnotationDependencyVisitor
     }
@@ -212,7 +212,7 @@ class DependencyVisitor(sourceFileName: String) extends ClassVisitor(Opcodes.ASM
       addDesc(desc)
     }
 
-    override def visitMethodInsn(opcode: Int, owner: String, name: String, desc: String) {
+    override def visitMethodInsn(opcode: Int, owner: String, name: String, desc: String, itf: Boolean) = {
       addInternalName(owner)
       addMethodDesc(desc)
     }
@@ -220,7 +220,7 @@ class DependencyVisitor(sourceFileName: String) extends ClassVisitor(Opcodes.ASM
     override def visitInvokeDynamicInsn(name: String, desc: String, bsm: Handle, bsmArgs: AnyRef*) {
       addMethodDesc(desc)
       addConstant(bsm)
-      bsmArgs.foreach(addConstant(_))
+      bsmArgs.foreach(addConstant)
     }
 
     override def visitLdcInsn(cst: AnyRef) {
@@ -246,7 +246,7 @@ class DependencyVisitor(sourceFileName: String) extends ClassVisitor(Opcodes.ASM
     }
   }
 
-  private class SignatureDependencyVisitor extends SignatureVisitor(Opcodes.ASM4) {
+  private class SignatureDependencyVisitor extends SignatureVisitor(Opcodes.ASM5) {
     override def visitClassType(name: String) {
       signatureClassName = name
       addInternalName(name)
